@@ -179,3 +179,23 @@ Stage Summary:
 - All 11 production hardening items completed
 - Files created/modified: useDebounce.ts, ErrorBoundary.tsx, page.tsx, proxy.ts, health/route.ts, schema.prisma
 - App is fully hardened: Zod validation, dual-layer rate limiting (global + per-endpoint), prompt injection defense, hallucination guards, LRU caching, LLM concurrency semaphore, timeout controllers, client-side throttling, debouncing hooks, error boundaries, security headers (CSP, HSTS, X-Frame-Options), request body size limits, HTTP method enforcement, DB indexes, health monitoring endpoint
+
+---
+Task ID: 14
+Agent: Main Orchestrator
+Task: Migrate database from SQLite to Neon PostgreSQL
+
+Work Log:
+- Installed @neondatabase/serverless and @prisma/adapter-neon
+- Updated prisma/schema.prisma: provider = "postgresql" with dual URLs (pooled + direct)
+- Rewrote src/lib/db.ts to use Neon serverless adapter (neon() → PrismaNeon → PrismaClient)
+- Updated .env with Neon connection string placeholders and clear instructions
+- Ran prisma generate — PostgreSQL client generated successfully
+- ESLint passes with zero errors
+- Seed script (prisma/seed.ts) requires no changes — uses db import directly
+
+Stage Summary:
+- Database fully migrated from SQLite to Neon PostgreSQL
+- Zero code changes needed in any API route or component
+- User only needs to: 1) Create Neon project, 2) Paste two connection strings into .env, 3) Run bun run db:push && bun prisma db seed
+- Files changed: schema.prisma, db.ts, .env, package.json
