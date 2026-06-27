@@ -1,0 +1,720 @@
+     1→'use client';
+     2→
+     3→import { useState, useRef, useEffect, useCallback } from 'react';
+     4→import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+     5→import { useAppStore } from '@/store/useAppStore';
+     6→import ReactMarkdown from 'react-markdown';
+     7→import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+     8→
+     9→// Strict sanitize schema: allow markdown rendering but block all HTML/script injection
+    10→const sanitizeSchema = {
+    11→  ...defaultSchema,
+    12→  attributes: {
+    13→    ...defaultSchema.attributes,
+    14→    code: [...(defaultSchema.attributes?.code ?? []), 'className'],
+    15→    span: [...(defaultSchema.attributes?.span ?? []), 'className'],
+    16→  },
+    17→  tagNames: [
+    18→    // Allow standard markdown output elements
+    19→    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    20→    'p', 'br', 'hr',
+    21→    'ul', 'ol', 'li',
+    22→    'a',
+    23→    'strong', 'em', 'del', 'blockquote',
+    24→    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    25→    'pre', 'code', 'span',
+    26→    'div', // needed for code block wrappers
+    27→  ],
+    28→};
+    29→import { motion, AnimatePresence } from 'framer-motion';
+    30→import { Button } from '@/components/ui/button';
+    31→import { Badge } from '@/components/ui/badge';
+    32→import { ScrollArea } from '@/components/ui/scroll-area';
+    33→import { Textarea } from '@/components/ui/textarea';
+    34→import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+    35→import {
+    36→  Select,
+    37→  SelectContent,
+    38→  SelectItem,
+    39→  SelectTrigger,
+    40→  SelectValue,
+    41→} from '@/components/ui/select';
+    42→import {
+    43→  Send,
+    44→  Plus,
+    45→  Sparkles,
+    46→  Copy,
+    47→  Check,
+    48→  MessageSquare,
+    49→  BookOpen,
+    50→  Brain,
+    51→  Lightbulb,
+    52→  ChevronRight,
+    53→  X,
+    54→  Bot,
+    55→  PanelLeftClose,
+    56→  PanelLeftOpen,
+    57→  PanelRightClose,
+    58→  PanelRightOpen,
+    59→} from 'lucide-react';
+    60→
+    61→// ── Mock conversation history ──────────────────────────────────────────
+    62→const MOCK_CONVERSATIONS = [
+    63→  { id: 'c1', title: 'Arrays & Hashing', timestamp: '2 hours ago', active: true },
+    64→  { id: 'c2', title: 'Binary Search Deep Dive', timestamp: 'Yesterday' },
+    65→  { id: 'c3', title: 'Java OOP Concepts', timestamp: '2 days ago' },
+    66→  { id: 'c4', title: 'SQL Joins Practice', timestamp: '3 days ago' },
+    67→  { id: 'c5', title: 'System Design: URL Shortener', timestamp: '1 week ago' },
+    68→];
+    69→
+    70→const QUICK_START_SUGGESTIONS = [
+    71→  { icon: Lightbulb, label: 'Explain Big O Notation', query: 'Explain Big O Notation with examples' },
+    72→  { icon: Sparkles, label: 'Help me with Two Sum problem', query: 'Help me solve the Two Sum problem step by step' },
+    73→  { icon: BookOpen, label: 'Quiz me on Trees', query: 'Quiz me on binary trees and their traversals' },
+    74→  { icon: MessageSquare, label: 'Review my Java code', query: 'I need help reviewing my Java code' },
+    75→];
+    76→
+    77→const RELATED_TOPICS = ['Arrays', 'Hash Maps', 'Two Pointers', 'Sliding Window', 'Sorting'];
+    78→
+    79→const TOPIC_OPTIONS = [
+    80→  { value: 'data-structures', label: 'Data Structures' },
+    81→  { value: 'algorithms', label: 'Algorithms' },
+    82→  { value: 'java', label: 'Java' },
+    83→  { value: 'python', label: 'Python' },
+    84→  { value: 'javascript', label: 'JavaScript' },
+    85→  { value: 'sql', label: 'SQL' },
+    86→  { value: 'system-design', label: 'System Design' },
+    87→  { value: 'interview-prep', label: 'Interview Prep' },
+    88→];
+    89→
+    90→// ── Typing indicator ───────────────────────────────────────────────────
+    91→function TypingIndicator() {
+    92→  return (
+    93→    <motion.div
+    94→      initial={{ opacity: 0, y: 10 }}
+    95→      animate={{ opacity: 1, y: 0 }}
+    96→      exit={{ opacity: 0, y: -10 }}
+    97→      className="flex items-start gap-3 max-w-3xl"
+    98→    >
+    99→      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+   100→        <Bot className="w-4 h-4 text-primary" />
+   101→      </div>
+   102→      <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3">
+   103→        <div className="flex items-center gap-1.5">
+   104→          <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0ms]" />
+   105→          <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:150ms]" />
+   106→          <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:300ms]" />
+   107→        </div>
+   108→      </div>
+   109→    </motion.div>
+   110→  );
+   111→}
+   112→
+   113→// ── Code block with copy button ────────────────────────────────────────
+   114→function CodeBlock({ children, className }: { children: string; className?: string }) {
+   115→  const [copied, setCopied] = useState(false);
+   116→  const handleCopy = useCallback(() => {
+   117→    navigator.clipboard.writeText(children.trim());
+   118→    setCopied(true);
+   119→    setTimeout(() => setCopied(false), 2000);
+   120→  }, [children]);
+   121→
+   122→  const lang = className?.replace('language-', '') || 'code';
+   123→
+   124→  return (
+   125→    <div className="relative group my-3">
+   126→      <div className="flex items-center justify-between px-4 py-2 bg-black/40 border border-border rounded-t-lg">
+   127→        <span className="text-xs text-muted-foreground font-mono">{lang}</span>
+   128→        <Button
+   129→          variant="ghost"
+   130→          size="sm"
+   131→          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+   132→          onClick={handleCopy}
+   133→        >
+   134→          {copied ? <Check className="w-3 h-3 text-success mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
+   135→          {copied ? 'Copied' : 'Copy'}
+   136→        </Button>
+   137→      </div>
+   138→      <div className="code-block rounded-t-none !rounded-t-none">
+   139→        <pre className="p-4 overflow-x-auto">
+   140→          <code className={className}>{children}</code>
+   141→        </pre>
+   142→      </div>
+   143→    </div>
+   144→  );
+   145→}
+   146→
+   147→// ── Resize handle ──────────────────────────────────────────────────────
+   148→function ResizeHandle({ direction = 'vertical' }: { direction?: 'vertical' | 'horizontal' }) {
+   149→  return (
+   150→    <PanelResizeHandle
+   151→      className={`group relative flex items-center justify-center transition-colors ${
+   152→        direction === 'vertical' ? 'w-1.5 hover:w-2' : 'h-1.5 hover:h-2'
+   153→      }`}
+   154→    >
+   155→      <div
+   156→        className={`${
+   157→          direction === 'vertical'
+   158→            ? 'w-px h-8 rounded-full bg-border group-hover:bg-primary/40 group-active:bg-primary/60 transition-colors'
+   159→            : 'h-px w-8 rounded-full bg-border group-hover:bg-primary/40 group-active:bg-primary/60 transition-colors'
+   160→        }`}
+   161→      />
+   162→    </PanelResizeHandle>
+   163→  );
+   164→}
+   165→
+   166→// ── Main Component ─────────────────────────────────────────────────────
+   167→export default function AiTutor() {
+   168→  const { chatMessages, chatLoading, addChatMessage, setChatLoading, clearChat } = useAppStore();
+   169→  const [input, setInput] = useState('');
+   170→  const [selectedTopic, setSelectedTopic] = useState<string>('');
+   171→  const [activeConversation, setActiveConversation] = useState('c1');
+   172→  const [leftCollapsed, setLeftCollapsed] = useState(false);
+   173→  const [rightCollapsed, setRightCollapsed] = useState(false);
+   174→  const [copiedId, setCopiedId] = useState<string | null>(null);
+   175→
+   176→  const messagesEndRef = useRef<HTMLDivElement>(null);
+   177→  const textareaRef = useRef<HTMLTextAreaElement>(null);
+   178→
+   179→  // Auto-scroll to bottom on new messages
+   180→  useEffect(() => {
+   181→    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+   182→  }, [chatMessages, chatLoading]);
+   183→
+   184→  // Auto-resize textarea
+   185→  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+   186→    setInput(e.target.value);
+   187→    if (textareaRef.current) {
+   188→      textareaRef.current.style.height = 'auto';
+   189→      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + 'px';
+   190→    }
+   191→  };
+   192→
+   193→  // AbortController ref for cancelling in-flight requests on unmount
+   194→  const abortControllerRef = useRef<AbortController | null>(null);
+   195→  // Throttle ref to prevent rapid re-submissions
+   196→  const lastSendRef = useRef<number>(0);
+   197→  const SEND_THROTTLE_MS = 2000; // 2 seconds minimum between sends
+   198→
+   199→  // Cancel any in-flight request on unmount
+   200→  useEffect(() => {
+   201→    return () => {
+   202→      abortControllerRef.current?.abort();
+   203→    };
+   204→  }, []);
+   205→
+   206→  // Send message (with throttling, abort, and input validation)
+   207→  const handleSend = useCallback(async () => {
+   208→    if (!input.trim() || chatLoading) return;
+   209→
+   210→    // ── Client-side input length validation ──
+   211→    if (input.length > 4000) {
+   212→      addChatMessage({
+   213→        id: crypto.randomUUID(),
+   214→        role: 'assistant',
+   215→        content: 'Your message is too long. Please keep it under 4000 characters.',
+   216→        timestamp: new Date(),
+   217→      });
+   218→      return;
+   219→    }
+   220→
+   221→    // ── Throttle: prevent rapid sends ──
+   222→    const now = Date.now();
+   223→    if (now - lastSendRef.current < SEND_THROTTLE_MS) {
+   224→      return;
+   225→    }
+   226→    lastSendRef.current = now;
+   227→
+   228→    const userMsg = {
+   229→      id: crypto.randomUUID(),
+   230→      role: 'user' as const,
+   231→      content: input.trim().slice(0, 4000),
+   232→      timestamp: new Date(),
+   233→    };
+   234→    addChatMessage(userMsg);
+   235→    setInput('');
+   236→    if (textareaRef.current) {
+   237→      textareaRef.current.style.height = 'auto';
+   238→    }
+   239→    setChatLoading(true);
+   240→
+   241→    // ── Abort any previous in-flight request ──
+   242→    abortControllerRef.current?.abort();
+   243→    const controller = new AbortController();
+   244→    abortControllerRef.current = controller;
+   245→
+   246→    try {
+   247→      const res = await fetch('/api/chat', {
+   248→        method: 'POST',
+   249→        headers: { 'Content-Type': 'application/json' },
+   250→        signal: controller.signal,
+   251→        body: JSON.stringify({
+   252→          messages: [...chatMessages, userMsg].map((m) => ({
+   253→            role: m.role,
+   254→            content: m.content,
+   255→          })),
+   256→          topic: selectedTopic || undefined,
+   257→        }),
+   258→      });
+   259→
+   260→      if (!res.ok) {
+   261→        const errData = await res.json().catch(() => ({}));
+   262→        if (res.status === 429) {
+   263→          addChatMessage({
+   264→            id: crypto.randomUUID(),
+   265→            role: 'assistant',
+   266→            content: 'You\'re sending messages too quickly. Please wait a moment before trying again.',
+   267→            timestamp: new Date(),
+   268→          });
+   269→        } else {
+   270→          addChatMessage({
+   271→            id: crypto.randomUUID(),
+   272→            role: 'assistant',
+   273→            content: errData.error || `Request failed (${res.status}). Please try again.`,
+   274→            timestamp: new Date(),
+   275→          });
+   276→        }
+   277→        return;
+   278→      }
+   279→
+   280→      const data = await res.json();
+   281→      addChatMessage({
+   282→        id: crypto.randomUUID(),
+   283→        role: 'assistant',
+   284→        content: data.response || 'Sorry, I could not generate a response.',
+   285→        sources: data._meta?.hallucinationFlags ? ['Response may contain inaccuracies'] : undefined,
+   286→        timestamp: new Date(),
+   287→      });
+   288→    } catch (err) {
+   289→      if (err instanceof DOMException && err.name === 'AbortError') {
+   290→        // Request was cancelled — don't show error
+   291→        return;
+   292→      }
+   293→      addChatMessage({
+   294→        id: crypto.randomUUID(),
+   295→        role: 'assistant',
+   296→        content: 'Something went wrong. Please try again.',
+   297→        timestamp: new Date(),
+   298→      });
+   299→    } finally {
+   300→      setChatLoading(false);
+   301→    }
+   302→  }, [input, chatLoading, chatMessages, selectedTopic, addChatMessage, setChatLoading]);
+   303→
+   304→  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+   305→    if (e.key === 'Enter' && !e.shiftKey) {
+   306→      e.preventDefault();
+   307→      handleSend();
+   308→    }
+   309→  };
+   310→
+   311→  const handleNewChat = () => {
+   312→    clearChat();
+   313→    setActiveConversation('');
+   314→  };
+   315→
+   316→  const handleSuggestionClick = (query: string) => {
+   317→    setInput(query);
+   318→    textareaRef.current?.focus();
+   319→  };
+   320→
+   321→  const handleCopyMessage = (id: string, content: string) => {
+   322→    navigator.clipboard.writeText(content);
+   323→    setCopiedId(id);
+   324→    setTimeout(() => setCopiedId(null), 2000);
+   325→  };
+   326→
+   327→  // Get sources from the last assistant message
+   328→  const lastAssistantMsg = [...chatMessages].reverse().find((m) => m.role === 'assistant');
+   329→  const sources = lastAssistantMsg?.sources;
+   330→
+   331→  return (
+   332→    <div className="h-screen w-full bg-background flex flex-col overflow-hidden">
+   333→      {/* Top bar */}
+   334→      <header className="h-14 border-b border-border flex items-center justify-between px-4 flex-shrink-0">
+   335→        <div className="flex items-center gap-3">
+   336→          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+   337→            <Brain className="w-4 h-4 text-primary" />
+   338→          </div>
+   339→          <h1 className="text-sm font-semibold tracking-tight">CodeMentor AI</h1>
+   340→          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+   341→            Tutor
+   342→          </Badge>
+   343→        </div>
+   344→        <div className="flex items-center gap-1">
+   345→          <Tooltip>
+   346→            <TooltipTrigger asChild>
+   347→              <Button
+   348→                variant="ghost"
+   349→                size="icon"
+   350→                className="h-8 w-8"
+   351→                onClick={() => setLeftCollapsed((c) => !c)}
+   352→              >
+   353→                {leftCollapsed ? (
+   354→                  <PanelLeftOpen className="w-4 h-4" />
+   355→                ) : (
+   356→                  <PanelLeftClose className="w-4 h-4" />
+   357→                )}
+   358→              </Button>
+   359→            </TooltipTrigger>
+   360→            <TooltipContent side="bottom">
+   361→              {leftCollapsed ? 'Show history' : 'Hide history'}
+   362→            </TooltipContent>
+   363→          </Tooltip>
+   364→          <Tooltip>
+   365→            <TooltipTrigger asChild>
+   366→              <Button
+   367→                variant="ghost"
+   368→                size="icon"
+   369→                className="h-8 w-8"
+   370→                onClick={() => setRightCollapsed((c) => !c)}
+   371→              >
+   372→                {rightCollapsed ? (
+   373→                  <PanelRightOpen className="w-4 h-4" />
+   374→                ) : (
+   375→                  <PanelRightClose className="w-4 h-4" />
+   376→                )}
+   377→              </Button>
+   378→            </TooltipTrigger>
+   379→            <TooltipContent side="bottom">
+   380→              {rightCollapsed ? 'Show context' : 'Hide context'}
+   381→            </TooltipContent>
+   382→          </Tooltip>
+   383→        </div>
+   384→      </header>
+   385→
+   386→      {/* 3-panel layout */}
+   387→      <PanelGroup direction="horizontal" className="flex-1">
+   388→        {/* ── Left Panel: Conversation History ─────────────────────── */}
+   389→        {!leftCollapsed && (
+   390→          <>
+   391→            <Panel defaultSize={18} minSize={14} maxSize={22} className="flex flex-col">
+   392→              <div className="flex flex-col h-full border-r border-border bg-card/30">
+   393→                <div className="p-3 flex-shrink-0">
+   394→                  <Button
+   395→                    onClick={handleNewChat}
+   396→                    className="w-full justify-start gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+   397→                  >
+   398→                    <Plus className="w-4 h-4" />
+   399→                    New Chat
+   400→                  </Button>
+   401→                </div>
+   402→                <ScrollArea className="flex-1 px-3 pb-3">
+   403→                  <div className="space-y-1">
+   404→                    {MOCK_CONVERSATIONS.map((conv) => (
+   405→                      <button
+   406→                        key={conv.id}
+   407→                        onClick={() => setActiveConversation(conv.id)}
+   408→                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all group ${
+   409→                          activeConversation === conv.id
+   410→                            ? 'bg-primary/15 text-foreground border border-primary/20'
+   411→                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+   412→                        }`}
+   413→                      >
+   414→                        <div className="flex items-center gap-2">
+   415→                          <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 opacity-60" />
+   416→                          <span className="truncate font-medium">{conv.title}</span>
+   417→                        </div>
+   418→                        <span className="text-xs text-muted-foreground/70 ml-5.5 mt-0.5 block">
+   419→                          {conv.timestamp}
+   420→                        </span>
+   421→                      </button>
+   422→                    ))}
+   423→                  </div>
+   424→                </ScrollArea>
+   425→              </div>
+   426→            </Panel>
+   427→            <ResizeHandle />
+   428→          </>
+   429→        )}
+   430→
+   431→        {/* ── Center Panel: Chat Area ──────────────────────────────── */}
+   432→        <Panel minSize={40} className="flex flex-col">
+   433→          <div className="flex flex-col h-full">
+   434→            {chatMessages.length === 0 ? (
+   435→              /* Welcome state */
+   436→              <div className="flex-1 flex flex-col items-center justify-center px-6">
+   437→                <motion.div
+   438→                  initial={{ opacity: 0, scale: 0.9 }}
+   439→                  animate={{ opacity: 1, scale: 1 }}
+   440→                  transition={{ duration: 0.5, ease: 'easeOut' }}
+   441→                  className="text-center max-w-lg"
+   442→                >
+   443→                  <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/15 flex items-center justify-center glow-cyan-sm">
+   444→                    <Brain className="w-8 h-8 text-primary" />
+   445→                  </div>
+   446→                  <h2 className="text-2xl font-bold mb-2 gradient-text">
+   447→                    How can I help you learn today?
+   448→                  </h2>
+   449→                  <p className="text-muted-foreground text-sm mb-8">
+   450→                    Ask me about data structures, algorithms, system design, or any programming topic.
+   451→                  </p>
+   452→
+   453→                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   454→                    {QUICK_START_SUGGESTIONS.map((s, i) => (
+   455→                      <motion.button
+   456→                        key={s.label}
+   457→                        initial={{ opacity: 0, y: 15 }}
+   458→                        animate={{ opacity: 1, y: 0 }}
+   459→                        transition={{ delay: 0.1 * i, duration: 0.4 }}
+   460→                        onClick={() => handleSuggestionClick(s.query)}
+   461→                        className="flex items-start gap-3 p-4 rounded-xl border border-border bg-card/50 hover:bg-card hover:border-primary/30 transition-all text-left group"
+   462→                      >
+   463→                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+   464→                          <s.icon className="w-4 h-4 text-primary" />
+   465→                        </div>
+   466→                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-snug">
+   467→                          {s.label}
+   468→                        </span>
+   469→                      </motion.button>
+   470→                    ))}
+   471→                  </div>
+   472→                </motion.div>
+   473→              </div>
+   474→            ) : (
+   475→              /* Messages */
+   476→              <ScrollArea className="flex-1 px-4 py-4">
+   477→                <div className="max-w-3xl mx-auto space-y-4">
+   478→                  <AnimatePresence mode="popLayout">
+   479→                    {chatMessages.map((msg) => (
+   480→                      <motion.div
+   481→                        key={msg.id}
+   482→                        initial={{ opacity: 0, y: 12 }}
+   483→                        animate={{ opacity: 1, y: 0 }}
+   484→                        exit={{ opacity: 0, y: -12 }}
+   485→                        transition={{ duration: 0.3 }}
+   486→                        className={`flex items-start gap-3 ${
+   487→                          msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+   488→                        }`}
+   489→                      >
+   490→                        {/* Avatar */}
+   491→                        {msg.role === 'assistant' && (
+   492→                          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center mt-1">
+   493→                            <Bot className="w-4 h-4 text-primary" />
+   494→                          </div>
+   495→                        )}
+   496→
+   497→                        {/* Bubble */}
+   498→                        <div
+   499→                          className={`relative max-w-[80%] ${
+   500→                            msg.role === 'user'
+   501→                              ? 'bg-primary/15 border border-primary/25 rounded-2xl rounded-tr-sm px-4 py-3'
+   502→                              : 'bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3'
+   503→                          }`}
+   504→                        >
+   505→                          {msg.role === 'assistant' && (
+   506→                            <Badge
+   507→                              variant="secondary"
+   508→                              className="absolute -top-2.5 left-3 text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-0"
+   509→                            >
+   510→                              AI
+   511→                            </Badge>
+   512→                          )}
+   513→
+   514→                          <div className="prose prose-invert prose-sm max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-base [&_h3]:text-sm [&_h4]:text-sm [&_strong]:text-foreground [&_code]:text-primary/90 [&_code:not(pre_*)]:bg-muted [&_code:not(pre_*)]:px-1.5 [&_code:not(pre_*)]:py-0.5 [&_code:not(pre_*)]:rounded [&_code:not(pre_*)]:text-xs [&_table]:text-xs [&_th]:border-border [&_td]:border-border [&_th]:p-2 [&_td]:p-2 [&_blockquote]:border-primary/30">
+   515→                            <ReactMarkdown
+   516→                              rehypePlugins={[[rehypeSanitize, sanitizeSchema]]}
+   517→                              components={{
+   518→                                pre({ children }) {
+   519→                                  return <>{children}</>;
+   520→                                },
+   521→                                code({ className: codeClassName, children, ...props }) {
+   522→                                  const isInline = !codeClassName;
+   523→                                  const match = /language-(\w+)/.exec(codeClassName || '');
+   524→                                  const codeString = String(children).replace(/\n$/, '');
+   525→
+   526→                                  if (isInline) {
+   527→                                    return (
+   528→                                      <code className={codeClassName} {...props}>
+   529→                                        {children}
+   530→                                      </code>
+   531→                                    );
+   532→                                  }
+   533→
+   534→                                  return (
+   535→                                    <CodeBlock className={codeClassName}>
+   536→                                      {codeString}
+   537→                                    </CodeBlock>
+   538→                                  );
+   539→                                },
+   540→                              }}
+   541→                            >
+   542→                              {msg.content}
+   543→                            </ReactMarkdown>
+   544→                          </div>
+   545→
+   546→                          {/* Copy message button */}
+   547→                          <div className="flex items-center justify-end mt-2 gap-1">
+   548→                            <button
+   549→                              onClick={() => handleCopyMessage(msg.id, msg.content)}
+   550→                              className="text-muted-foreground/50 hover:text-muted-foreground transition-colors p-1 rounded"
+   551→                              aria-label="Copy message"
+   552→                            >
+   553→                              {copiedId === msg.id ? (
+   554→                                <Check className="w-3.5 h-3.5 text-success" />
+   555→                              ) : (
+   556→                                <Copy className="w-3.5 h-3.5" />
+   557→                              )}
+   558→                            </button>
+   559→                          </div>
+   560→                        </div>
+   561→                      </motion.div>
+   562→                    ))}
+   563→                  </AnimatePresence>
+   564→
+   565→                  {/* Typing indicator */}
+   566→                  <AnimatePresence>
+   567→                    {chatLoading && <TypingIndicator />}
+   568→                  </AnimatePresence>
+   569→
+   570→                  <div ref={messagesEndRef} />
+   571→                </div>
+   572→              </ScrollArea>
+   573→            )}
+   574→
+   575→            {/* Input area */}
+   576→            <div className="flex-shrink-0 border-t border-border bg-card/30 p-4">
+   577→              <div className="max-w-3xl mx-auto">
+   578→                <div className="flex items-end gap-2 bg-card border border-border rounded-2xl px-3 py-2 focus-within:border-primary/40 transition-colors">
+   579→                  <Textarea
+   580→                    ref={textareaRef}
+   581→                    value={input}
+   582→                    onChange={handleTextareaChange}
+   583→                    onKeyDown={handleKeyDown}
+   584→                    placeholder="Ask me anything about programming..."
+   585→                    className="flex-1 min-h-[36px] max-h-[160px] border-0 bg-transparent resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm placeholder:text-muted-foreground/50"
+   586→                    rows={1}
+   587→                    disabled={chatLoading}
+   588→                  />
+   589→                  <Tooltip>
+   590→                    <TooltipTrigger asChild>
+   591→                      <Button
+   592→                        size="icon"
+   593→                        className="h-8 w-8 rounded-xl flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40"
+   594→                        onClick={handleSend}
+   595→                        disabled={!input.trim() || chatLoading}
+   596→                      >
+   597→                        <Send className="w-4 h-4" />
+   598→                      </Button>
+   599→                    </TooltipTrigger>
+   600→                    <TooltipContent side="top">Send message</TooltipContent>
+   601→                  </Tooltip>
+   602→                </div>
+   603→                <div className="flex items-center justify-between mt-2 px-1">
+   604→                  <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+   605→                    <SelectTrigger className="w-44 h-7 text-xs border-border/50 bg-transparent">
+   606→                      <SelectValue placeholder="Select topic (optional)" />
+   607→                    </SelectTrigger>
+   608→                    <SelectContent>
+   609→                      {TOPIC_OPTIONS.map((t) => (
+   610→                        <SelectItem key={t.value} value={t.value} className="text-xs">
+   611→                          {t.label}
+   612→                        </SelectItem>
+   613→                      ))}
+   614→                    </SelectContent>
+   615→                  </Select>
+   616→                  <span className="text-[10px] text-muted-foreground/50">
+   617→                    Press Enter to send, Shift+Enter for new line
+   618→                  </span>
+   619→                </div>
+   620→              </div>
+   621→            </div>
+   622→          </div>
+   623→        </Panel>
+   624→
+   625→        {/* ── Right Panel: Context ─────────────────────────────────── */}
+   626→        {!rightCollapsed && (
+   627→          <>
+   628→            <ResizeHandle />
+   629→            <Panel defaultSize={20} minSize={16} maxSize={25} className="flex flex-col">
+   630→              <div className="flex flex-col h-full border-l border-border bg-card/30">
+   631→                <ScrollArea className="flex-1 px-4 py-4">
+   632→                  <div className="space-y-6">
+   633→                    {/* Context header */}
+   634→                    <div>
+   635→                      <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+   636→                        <Sparkles className="w-4 h-4 text-primary" />
+   637→                        Context
+   638→                      </h3>
+   639→                    </div>
+   640→
+   641→                    {/* Related Topics */}
+   642→                    <div>
+   643→                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+   644→                        Related Topics
+   645→                      </h4>
+   646→                      <div className="flex flex-wrap gap-2">
+   647→                        {RELATED_TOPICS.map((topic) => (
+   648→                          <Badge
+   649→                            key={topic}
+   650→                            variant="secondary"
+   651→                            className="text-xs cursor-pointer hover:bg-primary/15 hover:text-primary hover:border-primary/30 border border-transparent transition-all"
+   652→                          >
+   653→                            <ChevronRight className="w-3 h-3 mr-1 opacity-50" />
+   654→                            {topic}
+   655→                          </Badge>
+   656→                        ))}
+   657→                      </div>
+   658→                    </div>
+   659→
+   660→                    {/* Sources */}
+   661→                    <div>
+   662→                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+   663→                        Sources
+   664→                      </h4>
+   665→                      {sources && sources.length > 0 ? (
+   666→                        <div className="space-y-2">
+   667→                          {sources.map((source, i) => (
+   668→                            <div
+   669→                              key={i}
+   670→                              className="flex items-start gap-2 p-2.5 rounded-lg bg-background/50 border border-border text-xs text-muted-foreground hover:text-foreground transition-colors"
+   671→                            >
+   672→                              <BookOpen className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-primary/70" />
+   673→                              <span className="leading-relaxed">{source}</span>
+   674→                            </div>
+   675→                          ))}
+   676→                        </div>
+   677→                      ) : (
+   678→                        <div className="flex flex-col items-center justify-center py-6 text-center">
+   679→                          <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-2">
+   680→                            <BookOpen className="w-4 h-4 text-muted-foreground/40" />
+   681→                          </div>
+   682→                          <p className="text-xs text-muted-foreground/50">
+   683→                            Sources will appear here
+   684→                          </p>
+   685→                        </div>
+   686→                      )}
+   687→                    </div>
+   688→
+   689→                    {/* Quick Actions */}
+   690→                    <div>
+   691→                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+   692→                        Quick Actions
+   693→                      </h4>
+   694→                      <div className="space-y-2">
+   695→                        {[
+   696→                          { icon: Sparkles, label: 'Generate Quiz' },
+   697→                          { icon: MessageSquare, label: 'Start Interview' },
+   698→                          { icon: BookOpen, label: 'Show Code Example' },
+   699→                        ].map((action) => (
+   700→                          <Button
+   701→                            key={action.label}
+   702→                            variant="outline"
+   703→                            className="w-full justify-start gap-2 h-9 text-xs border-border/50 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-all"
+   704→                          >
+   705→                            <action.icon className="w-3.5 h-3.5" />
+   706→                            {action.label}
+   707→                          </Button>
+   708→                        ))}
+   709→                      </div>
+   710→                    </div>
+   711→                  </div>
+   712→                </ScrollArea>
+   713→              </div>
+   714→            </Panel>
+   715→          </>
+   716→        )}
+   717→      </PanelGroup>
+   718→    </div>
+   719→  );
+   720→}

@@ -19,11 +19,14 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  chatSessions    ChatSession[]
-  quizAttempts    QuizAttempt[]
+  chatSessions      ChatSession[]
+  quizAttempts      QuizAttempt[]
   interviewSessions InterviewSession[]
-  codeReviews     CodeReview[]
-  learningProgress LearningProgress[]
+  codeReviews       CodeReview[]
+  learningProgress  LearningProgress[]
+
+  @@index([email])
+  @@index([level])
 }
 
 model ChatSession {
@@ -36,6 +39,9 @@ model ChatSession {
   updatedAt DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
 }
 
 model ChatMessage {
@@ -47,6 +53,9 @@ model ChatMessage {
   createdAt  DateTime @default(now())
 
   session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([createdAt])
 }
 
 model Quiz {
@@ -62,6 +71,9 @@ model Quiz {
   updatedAt   DateTime @updatedAt
 
   attempts QuizAttempt[]
+
+  @@index([category])
+  @@index([difficulty])
 }
 
 model QuizAttempt {
@@ -76,6 +88,10 @@ model QuizAttempt {
 
   user User @relation(fields: [userId], references: [id])
   quiz Quiz @relation(fields: [quizId], references: [id])
+
+  @@index([userId])
+  @@index([quizId])
+  @@index([createdAt])
 }
 
 model InterviewSession {
@@ -92,6 +108,10 @@ model InterviewSession {
   updatedAt   DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
 }
 
 model CodeReview {
@@ -103,6 +123,10 @@ model CodeReview {
   createdAt    DateTime @default(now())
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([language])
+  @@index([createdAt])
 }
 
 model LearningProgress {
@@ -118,15 +142,24 @@ model LearningProgress {
   updatedAt   DateTime @updatedAt
 
   user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([topic])
+  @@index([mastery])
+  @@index([userId, topic])
 }
 
 model Topic {
-  id          String   @id @default(cuid())
-  name        String   @unique
-  category    String
-  description String?
-  order       Int      @default(0)
-  difficulty  String   @default("beginner")
+  id            String   @id @default(cuid())
+  name          String   @unique
+  category      String
+  description   String?
+  order         Int      @default(0)
+  difficulty    String   @default("beginner")
   prerequisites String?
-  createdAt   DateTime @default(now())
+  createdAt     DateTime @default(now())
+
+  @@index([category])
+  @@index([difficulty])
+  @@index([order])
 }

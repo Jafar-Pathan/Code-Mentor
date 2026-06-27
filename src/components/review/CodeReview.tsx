@@ -1,7 +1,9 @@
 'use client';
 
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import { Code, Sparkles, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -16,7 +18,18 @@ import {
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/useAppStore';
 import { toast } from 'sonner';
-import { useState } from 'react';
+
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [...(defaultSchema.attributes?.code ?? []), 'className'],
+    span: [...(defaultSchema.attributes?.span ?? []), 'className'],
+  },
+  tagNames: ['h1','h2','h3','h4','h5','h6','p','br','hr','ul','ol','li','a','strong','em','del','blockquote','table','thead','tbody','tr','th','td','pre','code','span','div'],
+};
+
+const MAX_CODE_LENGTH = 20000;
 
 const languageOptions = [
   { value: 'javascript', label: 'JavaScript' },
@@ -38,27 +51,46 @@ export default function CodeReview() {
   } = useAppStore();
 
   const [copied, setCopied] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
-  const handleAnalyze = async () => {
+  // Cancel on unmount
+  useEffect(() => () => { abortRef.current?.abort(); }, []);
+
+  const handleAnalyze = useCallback(async () => {
     if (!reviewCode.trim()) {
       toast.error('Please enter some code to analyze');
       return;
     }
+    if (reviewCode.length > MAX_CODE_LENGTH) {
+      toast.error(`Code is too long. Maximum ${MAX_CODE_LENGTH.toLocaleString()} characters.`);
+      return;
+    }
     setReviewLoading(true);
+    abortRef.current?.abort();
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     try {
       const res = await fetch('/api/review', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({ code: reviewCode, language: reviewLanguage }),
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        toast.error(errData.error || `Request failed (${res.status})`);
+        return;
+      }
       const data = await res.json();
       setReviewResult(data.review);
-    } catch {
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') return;
       toast.error('Failed to analyze code');
     } finally {
       setReviewLoading(false);
     }
-  };
+  }, [reviewCode, reviewLanguage, setReviewLoading, setReviewResult]);
 
   const handleCopy = async () => {
     if (reviewResult) {

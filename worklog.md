@@ -156,3 +156,26 @@ Work Log:
 Stage Summary:
 - Complete SPA verified end-to-end with zero errors
 - All navigation, features, and AI integrations working
+---
+Task ID: 13
+Agent: Main Orchestrator
+Task: Production hardening — remaining tasks (debounce, error boundaries, body limits, health check, DB indexes)
+
+Work Log:
+- Created `src/hooks/useDebounce.ts` with `useDebounce` (value debounce) and `useDebouncedCallback` (function debounce) hooks
+- Created `src/components/ErrorBoundary.tsx` — React Error Boundary with styled fallback UI (error icon, message, Try Again / Go Home buttons)
+- Updated `src/app/page.tsx` to wrap LandingPage and AppShell with ErrorBoundary
+- Enhanced `src/proxy.ts` with request body size enforcement (1MB API / 100KB page) and HTTP method block (405 for non-standard methods on API)
+- Removed conflicting `src/middleware.ts` (Next.js 16 uses proxy.ts)
+- Created `src/app/api/health/route.ts` — health check endpoint returning DB connectivity, cache stats, LLM concurrency, memory usage, uptime
+- Updated `prisma/schema.prisma` with 18 database indexes across all 8 models (userId, createdAt, category, difficulty, topic, mastery, composite indexes)
+- Ran `prisma db push` to apply indexes to SQLite
+- Passed ESLint with zero errors
+- Browser verified: Landing page renders all sections, Get Started → Dashboard works, AI Tutor 3-panel layout renders, Quiz Center renders with 8 categories
+- Browser verified: /api/health returns healthy status with all checks passing
+- Browser verified: Zero console errors
+
+Stage Summary:
+- All 11 production hardening items completed
+- Files created/modified: useDebounce.ts, ErrorBoundary.tsx, page.tsx, proxy.ts, health/route.ts, schema.prisma
+- App is fully hardened: Zod validation, dual-layer rate limiting (global + per-endpoint), prompt injection defense, hallucination guards, LRU caching, LLM concurrency semaphore, timeout controllers, client-side throttling, debouncing hooks, error boundaries, security headers (CSP, HSTS, X-Frame-Options), request body size limits, HTTP method enforcement, DB indexes, health monitoring endpoint

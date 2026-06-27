@@ -10,6 +10,7 @@ import CodeReview from "@/components/review/CodeReview";
 import InterviewMode from "@/components/interview/InterviewMode";
 import Analytics from "@/components/analytics/Analytics";
 import LearningRoadmap from "@/components/roadmap/LearningRoadmap";
+import ErrorBoundary from "@/components/ErrorBoundary";
 
 function AppContent() {
   const { currentView } = useAppStore();
@@ -38,8 +39,18 @@ export default function Home() {
   const { currentView } = useAppStore();
 
   if (currentView === "landing") {
-    return <LandingPage />;
+    return (
+      <ErrorBoundary>
+        <LandingPage />
+      </ErrorBoundary>
+    );
   }
 
-  return <AppShell>{<AppContent />}</AppShell>;
+  return (
+    <ErrorBoundary>
+      <AppShell>
+        <AppContent />
+      </AppShell>
+    </ErrorBoundary>
+  );
 }

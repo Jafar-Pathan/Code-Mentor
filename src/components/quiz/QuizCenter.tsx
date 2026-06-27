@@ -97,7 +97,16 @@ export default function QuizCenter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ category: selectedCategory, difficulty: selectedDifficulty, count: 5 }),
       });
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        toast.error(errData.error || `Quiz generation failed (${res.status})`);
+        return;
+      }
       const data = await res.json();
+      if (!data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
+        toast.error('Received invalid quiz data. Using fallback questions.');
+        throw new Error('Invalid quiz response');
+      }
       setQuiz({
         questions: data.questions,
         currentIndex: 0,
@@ -426,14 +435,14 @@ export default function QuizCenter() {
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
           {categories.map((cat, i) => {
             const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.id;
+            const isSelected = selectedCategory === cat.title;
             return (
               <motion.button
                 key={cat.id}
                 initial={{ opacity: 0, y: 15 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04 }}
-                onClick={() => setSelectedCategory(isSelected ? null : cat.id)}
+                onClick={() => setSelectedCategory(isSelected ? null : cat.title)}
                 className={`p-4 rounded-xl border text-left transition-all hover:border-primary/30 ${
                   isSelected ? 'border-primary/50 bg-primary/10 glow-cyan-sm' : 'border-border bg-card'
                 }`}

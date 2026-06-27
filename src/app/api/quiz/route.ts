@@ -1,5 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import ZAI from "z-ai-web-dev-sdk";
+import {
+  validateRequest,
+  QuizRequestSchema,
+  QuizResponseSchema,
+} from "@/lib/validation";
+import { rateLimit } from "@/lib/rate-limit";
+import { HALLUCINATION_GUARD } from "@/lib/prompt-defense";
+import {
+  hashKey,
+  getCached,
+  setCache,
+  acquireLLMSlot,
+  createTimeoutController,
+  LLM_TIMEOUT_MS,
+} from "@/lib/cache";
 
 let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
 
@@ -11,57 +26,156 @@ async function getZAI() {
 }
 
 export async function POST(request: NextRequest) {
+  const startTime = Date.now();
+  const clientIP =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    request.headers.get("x-real-ip") ||
+    "unknown";
+
+  // ── Rate Limiting ────────────────────────────────────────────────────
+  const rl = rateLimit(clientIP, "quiz");
+  if (!rl.allowed) {
+    return NextResponse.json(
+      {
+        error: "Too many quiz requests. Please wait before generating another.",
+        retryAfterMs: rl.resetMs,
+      },
+      {
+        status: 429,
+        headers: {
+          "Retry-After": String(Math.ceil(rl.resetMs / 1000)),
+          "X-RateLimit-Remaining": "0",
+        },
+      }
+    );
+  }
+
+  // ── Validation ───────────────────────────────────────────────────────
+  let body: unknown;
   try {
-    const { category, difficulty, count = 5 } = await request.json();
+    body = await request.json();
+  } catch {
+    return NextResponse.json(
+      { error: "Invalid request body." },
+      { status: 400 }
+    );
+  }
 
-    if (!category) {
-      return NextResponse.json({ error: "Category is required" }, { status: 400 });
-    }
+  const validation = validateRequest(QuizRequestSchema, body);
+  if (!validation.success) {
+    return NextResponse.json({ error: validation.error }, { status: 400 });
+  }
 
+  const { category, difficulty, count } = validation.data;
+
+  // ── Cache Check ──────────────────────────────────────────────────────
+  const cacheKey = hashKey(category, difficulty, String(count));
+  const cached = getCached<unknown>("quiz", cacheKey);
+  if (cached) {
+    console.log(`[Quiz] Cache hit: ${category}/${difficulty}`);
+    return NextResponse.json(cached, {
+      headers: { "X-Cache": "HIT", "X-RateLimit-Remaining": String(rl.remaining) },
+    });
+  }
+
+  // ── Concurrency Control + Timeout ────────────────────────────────────
+  const releaseSlot = await acquireLLMSlot();
+  const { controller: _, cleanup: clearTimeout } = createTimeoutController(LLM_TIMEOUT_MS);
+
+  try {
     const zai = await getZAI();
 
-    const prompt = `Generate ${count} multiple-choice quiz questions about ${category} programming topic at ${difficulty || "medium"} difficulty level.
+    const prompt = `Generate ${count} multiple-choice quiz questions about "${category}" at ${difficulty} difficulty level.
 
 Respond with valid JSON only in this exact format, no other text:
 {
-  "title": "Quiz title",
+  "title": "Quiz title about ${category}",
   "questions": [
     {
-      "id": "unique-id-1",
+      "id": "q1",
       "question": "The question text",
       "options": ["Option A", "Option B", "Option C", "Option D"],
       "correctIndex": 0,
-      "explanation": "Detailed explanation of why the correct answer is right and others are wrong",
-      "codeSnippet": "optional code snippet in markdown format"
+      "explanation": "Why correct is right and others are wrong",
+      "codeSnippet": "optional code snippet"
     }
   ]
 }
 
-Make questions challenging but fair. Include code snippets where relevant. Each question must have exactly 4 options with one correct answer (correctIndex 0-3).`;
+Rules:
+- Generate exactly ${count} questions
+- Each must have exactly 4 options
+- correctIndex must be 0-3
+- Questions must be factually accurate
+- Include code snippets where relevant
+- Difficulty: ${difficulty === "easy" ? "basic recall and understanding" : difficulty === "hard" ? "complex problem-solving and edge cases" : "application and analysis"}
+${HALLUCINATION_GUARD}`;
 
     const completion = await zai.chat.completions.create({
       messages: [
-        { role: "assistant", content: "You are a quiz generator for programming education. Generate high-quality, accurate multiple-choice questions." },
+        {
+          role: "assistant",
+          content: "You are a precise quiz generator for programming education. Every fact you state must be correct. Generate accurate, well-structured multiple-choice questions.",
+        },
         { role: "user", content: prompt },
       ],
       thinking: { type: "disabled" },
     });
 
     let response = completion.choices[0]?.message?.content || "";
-    
-    // Extract JSON from response
+
+    // Extract JSON
     const jsonMatch = response.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       response = jsonMatch[0];
     }
 
-    const quiz = JSON.parse(response);
-    return NextResponse.json(quiz);
+    const parsed = JSON.parse(response);
+
+    // ── Response Schema Validation ─────────────────────────────────────
+    const schemaResult = QuizResponseSchema.safeParse(parsed);
+    if (!schemaResult.success) {
+      console.error("[Quiz] LLM response failed schema validation:", schemaResult.error.issues);
+      return NextResponse.json(
+        { error: "Failed to generate a valid quiz. Please try again." },
+        { status: 502 }
+      );
+    }
+
+    const quiz = schemaResult.data;
+    const durationMs = Date.now() - startTime;
+
+    // ── Cache Store ────────────────────────────────────────────────────
+    setCache("quiz", cacheKey, quiz);
+
+    console.log(
+      `[Quiz] Generated ${quiz.questions.length} questions for ${category}/${difficulty} in ${durationMs}ms`
+    );
+
+    return NextResponse.json(quiz, {
+      headers: {
+        "X-Cache": "MISS",
+        "X-RateLimit-Remaining": String(rl.remaining),
+        "X-Response-Time": `${durationMs}ms`,
+      },
+    });
   } catch (error) {
-    console.error("Quiz API error:", error);
+    const durationMs = Date.now() - startTime;
+    console.error(`[Quiz] Error after ${durationMs}ms:`, error instanceof Error ? error.message : "Unknown");
+
+    if (error instanceof Error && error.name === "AbortError") {
+      return NextResponse.json(
+        { error: "Quiz generation timed out. Please try a simpler topic." },
+        { status: 504 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to generate quiz. Please try again." },
       { status: 500 }
     );
+  } finally {
+    clearTimeout();
+    releaseSlot();
   }
 }

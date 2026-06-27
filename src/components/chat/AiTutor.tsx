@@ -4,6 +4,28 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useAppStore } from '@/store/useAppStore';
 import ReactMarkdown from 'react-markdown';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+
+// Strict sanitize schema: allow markdown rendering but block all HTML/script injection
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    code: [...(defaultSchema.attributes?.code ?? []), 'className'],
+    span: [...(defaultSchema.attributes?.span ?? []), 'className'],
+  },
+  tagNames: [
+    // Allow standard markdown output elements
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'p', 'br', 'hr',
+    'ul', 'ol', 'li',
+    'a',
+    'strong', 'em', 'del', 'blockquote',
+    'table', 'thead', 'tbody', 'tr', 'th', 'td',
+    'pre', 'code', 'span',
+    'div', // needed for code block wrappers
+  ],
+};
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -168,13 +190,45 @@ export default function AiTutor() {
     }
   };
 
-  // Send message
-  const handleSend = async () => {
+  // AbortController ref for cancelling in-flight requests on unmount
+  const abortControllerRef = useRef<AbortController | null>(null);
+  // Throttle ref to prevent rapid re-submissions
+  const lastSendRef = useRef<number>(0);
+  const SEND_THROTTLE_MS = 2000; // 2 seconds minimum between sends
+
+  // Cancel any in-flight request on unmount
+  useEffect(() => {
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
+  // Send message (with throttling, abort, and input validation)
+  const handleSend = useCallback(async () => {
     if (!input.trim() || chatLoading) return;
+
+    // ── Client-side input length validation ──
+    if (input.length > 4000) {
+      addChatMessage({
+        id: crypto.randomUUID(),
+        role: 'assistant',
+        content: 'Your message is too long. Please keep it under 4000 characters.',
+        timestamp: new Date(),
+      });
+      return;
+    }
+
+    // ── Throttle: prevent rapid sends ──
+    const now = Date.now();
+    if (now - lastSendRef.current < SEND_THROTTLE_MS) {
+      return;
+    }
+    lastSendRef.current = now;
+
     const userMsg = {
       id: crypto.randomUUID(),
       role: 'user' as const,
-      content: input.trim(),
+      content: input.trim().slice(0, 4000),
       timestamp: new Date(),
     };
     addChatMessage(userMsg);
@@ -183,10 +237,17 @@ export default function AiTutor() {
       textareaRef.current.style.height = 'auto';
     }
     setChatLoading(true);
+
+    // ── Abort any previous in-flight request ──
+    abortControllerRef.current?.abort();
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        signal: controller.signal,
         body: JSON.stringify({
           messages: [...chatMessages, userMsg].map((m) => ({
             role: m.role,
@@ -195,14 +256,40 @@ export default function AiTutor() {
           topic: selectedTopic || undefined,
         }),
       });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        if (res.status === 429) {
+          addChatMessage({
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: 'You\'re sending messages too quickly. Please wait a moment before trying again.',
+            timestamp: new Date(),
+          });
+        } else {
+          addChatMessage({
+            id: crypto.randomUUID(),
+            role: 'assistant',
+            content: errData.error || `Request failed (${res.status}). Please try again.`,
+            timestamp: new Date(),
+          });
+        }
+        return;
+      }
+
       const data = await res.json();
       addChatMessage({
         id: crypto.randomUUID(),
         role: 'assistant',
         content: data.response || 'Sorry, I could not generate a response.',
+        sources: data._meta?.hallucinationFlags ? ['Response may contain inaccuracies'] : undefined,
         timestamp: new Date(),
       });
-    } catch {
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        // Request was cancelled — don't show error
+        return;
+      }
       addChatMessage({
         id: crypto.randomUUID(),
         role: 'assistant',
@@ -212,7 +299,7 @@ export default function AiTutor() {
     } finally {
       setChatLoading(false);
     }
-  };
+  }, [input, chatLoading, chatMessages, selectedTopic, addChatMessage, setChatLoading]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -426,6 +513,7 @@ export default function AiTutor() {
 
                           <div className="prose prose-invert prose-sm max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-base [&_h3]:text-sm [&_h4]:text-sm [&_strong]:text-foreground [&_code]:text-primary/90 [&_code:not(pre_*)]:bg-muted [&_code:not(pre_*)]:px-1.5 [&_code:not(pre_*)]:py-0.5 [&_code:not(pre_*)]:rounded [&_code:not(pre_*)]:text-xs [&_table]:text-xs [&_th]:border-border [&_td]:border-border [&_th]:p-2 [&_td]:p-2 [&_blockquote]:border-primary/30">
                             <ReactMarkdown
+                              rehypePlugins={[[rehypeSanitize, sanitizeSchema]]}
                               components={{
                                 pre({ children }) {
                                   return <>{children}</>;

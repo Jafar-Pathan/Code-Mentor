@@ -1,0 +1,632 @@
+     1→'use client';
+     2→
+     3→import { useState, useRef, useEffect, useCallback } from 'react';
+     4→import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
+     5→import { useAppStore } from '@/store/useAppStore';
+     6→import ReactMarkdown from 'react-markdown';
+     7→import { motion, AnimatePresence } from 'framer-motion';
+     8→import { Button } from '@/components/ui/button';
+     9→import { Badge } from '@/components/ui/badge';
+    10→import { ScrollArea } from '@/components/ui/scroll-area';
+    11→import { Textarea } from '@/components/ui/textarea';
+    12→import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+    13→import {
+    14→  Select,
+    15→  SelectContent,
+    16→  SelectItem,
+    17→  SelectTrigger,
+    18→  SelectValue,
+    19→} from '@/components/ui/select';
+    20→import {
+    21→  Send,
+    22→  Plus,
+    23→  Sparkles,
+    24→  Copy,
+    25→  Check,
+    26→  MessageSquare,
+    27→  BookOpen,
+    28→  Brain,
+    29→  Lightbulb,
+    30→  ChevronRight,
+    31→  X,
+    32→  Bot,
+    33→  PanelLeftClose,
+    34→  PanelLeftOpen,
+    35→  PanelRightClose,
+    36→  PanelRightOpen,
+    37→} from 'lucide-react';
+    38→
+    39→// ── Mock conversation history ──────────────────────────────────────────
+    40→const MOCK_CONVERSATIONS = [
+    41→  { id: 'c1', title: 'Arrays & Hashing', timestamp: '2 hours ago', active: true },
+    42→  { id: 'c2', title: 'Binary Search Deep Dive', timestamp: 'Yesterday' },
+    43→  { id: 'c3', title: 'Java OOP Concepts', timestamp: '2 days ago' },
+    44→  { id: 'c4', title: 'SQL Joins Practice', timestamp: '3 days ago' },
+    45→  { id: 'c5', title: 'System Design: URL Shortener', timestamp: '1 week ago' },
+    46→];
+    47→
+    48→const QUICK_START_SUGGESTIONS = [
+    49→  { icon: Lightbulb, label: 'Explain Big O Notation', query: 'Explain Big O Notation with examples' },
+    50→  { icon: Sparkles, label: 'Help me with Two Sum problem', query: 'Help me solve the Two Sum problem step by step' },
+    51→  { icon: BookOpen, label: 'Quiz me on Trees', query: 'Quiz me on binary trees and their traversals' },
+    52→  { icon: MessageSquare, label: 'Review my Java code', query: 'I need help reviewing my Java code' },
+    53→];
+    54→
+    55→const RELATED_TOPICS = ['Arrays', 'Hash Maps', 'Two Pointers', 'Sliding Window', 'Sorting'];
+    56→
+    57→const TOPIC_OPTIONS = [
+    58→  { value: 'data-structures', label: 'Data Structures' },
+    59→  { value: 'algorithms', label: 'Algorithms' },
+    60→  { value: 'java', label: 'Java' },
+    61→  { value: 'python', label: 'Python' },
+    62→  { value: 'javascript', label: 'JavaScript' },
+    63→  { value: 'sql', label: 'SQL' },
+    64→  { value: 'system-design', label: 'System Design' },
+    65→  { value: 'interview-prep', label: 'Interview Prep' },
+    66→];
+    67→
+    68→// ── Typing indicator ───────────────────────────────────────────────────
+    69→function TypingIndicator() {
+    70→  return (
+    71→    <motion.div
+    72→      initial={{ opacity: 0, y: 10 }}
+    73→      animate={{ opacity: 1, y: 0 }}
+    74→      exit={{ opacity: 0, y: -10 }}
+    75→      className="flex items-start gap-3 max-w-3xl"
+    76→    >
+    77→      <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+    78→        <Bot className="w-4 h-4 text-primary" />
+    79→      </div>
+    80→      <div className="bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3">
+    81→        <div className="flex items-center gap-1.5">
+    82→          <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:0ms]" />
+    83→          <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:150ms]" />
+    84→          <span className="w-2 h-2 rounded-full bg-muted-foreground/50 animate-bounce [animation-delay:300ms]" />
+    85→        </div>
+    86→      </div>
+    87→    </motion.div>
+    88→  );
+    89→}
+    90→
+    91→// ── Code block with copy button ────────────────────────────────────────
+    92→function CodeBlock({ children, className }: { children: string; className?: string }) {
+    93→  const [copied, setCopied] = useState(false);
+    94→  const handleCopy = useCallback(() => {
+    95→    navigator.clipboard.writeText(children.trim());
+    96→    setCopied(true);
+    97→    setTimeout(() => setCopied(false), 2000);
+    98→  }, [children]);
+    99→
+   100→  const lang = className?.replace('language-', '') || 'code';
+   101→
+   102→  return (
+   103→    <div className="relative group my-3">
+   104→      <div className="flex items-center justify-between px-4 py-2 bg-black/40 border border-border rounded-t-lg">
+   105→        <span className="text-xs text-muted-foreground font-mono">{lang}</span>
+   106→        <Button
+   107→          variant="ghost"
+   108→          size="sm"
+   109→          className="h-6 px-2 text-xs text-muted-foreground hover:text-foreground opacity-0 group-hover:opacity-100 transition-opacity"
+   110→          onClick={handleCopy}
+   111→        >
+   112→          {copied ? <Check className="w-3 h-3 text-success mr-1" /> : <Copy className="w-3 h-3 mr-1" />}
+   113→          {copied ? 'Copied' : 'Copy'}
+   114→        </Button>
+   115→      </div>
+   116→      <div className="code-block rounded-t-none !rounded-t-none">
+   117→        <pre className="p-4 overflow-x-auto">
+   118→          <code className={className}>{children}</code>
+   119→        </pre>
+   120→      </div>
+   121→    </div>
+   122→  );
+   123→}
+   124→
+   125→// ── Resize handle ──────────────────────────────────────────────────────
+   126→function ResizeHandle({ direction = 'vertical' }: { direction?: 'vertical' | 'horizontal' }) {
+   127→  return (
+   128→    <PanelResizeHandle
+   129→      className={`group relative flex items-center justify-center transition-colors ${
+   130→        direction === 'vertical' ? 'w-1.5 hover:w-2' : 'h-1.5 hover:h-2'
+   131→      }`}
+   132→    >
+   133→      <div
+   134→        className={`${
+   135→          direction === 'vertical'
+   136→            ? 'w-px h-8 rounded-full bg-border group-hover:bg-primary/40 group-active:bg-primary/60 transition-colors'
+   137→            : 'h-px w-8 rounded-full bg-border group-hover:bg-primary/40 group-active:bg-primary/60 transition-colors'
+   138→        }`}
+   139→      />
+   140→    </PanelResizeHandle>
+   141→  );
+   142→}
+   143→
+   144→// ── Main Component ─────────────────────────────────────────────────────
+   145→export default function AiTutor() {
+   146→  const { chatMessages, chatLoading, addChatMessage, setChatLoading, clearChat } = useAppStore();
+   147→  const [input, setInput] = useState('');
+   148→  const [selectedTopic, setSelectedTopic] = useState<string>('');
+   149→  const [activeConversation, setActiveConversation] = useState('c1');
+   150→  const [leftCollapsed, setLeftCollapsed] = useState(false);
+   151→  const [rightCollapsed, setRightCollapsed] = useState(false);
+   152→  const [copiedId, setCopiedId] = useState<string | null>(null);
+   153→
+   154→  const messagesEndRef = useRef<HTMLDivElement>(null);
+   155→  const textareaRef = useRef<HTMLTextAreaElement>(null);
+   156→
+   157→  // Auto-scroll to bottom on new messages
+   158→  useEffect(() => {
+   159→    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+   160→  }, [chatMessages, chatLoading]);
+   161→
+   162→  // Auto-resize textarea
+   163→  const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+   164→    setInput(e.target.value);
+   165→    if (textareaRef.current) {
+   166→      textareaRef.current.style.height = 'auto';
+   167→      textareaRef.current.style.height = Math.min(textareaRef.current.scrollHeight, 160) + 'px';
+   168→    }
+   169→  };
+   170→
+   171→  // Send message
+   172→  const handleSend = async () => {
+   173→    if (!input.trim() || chatLoading) return;
+   174→    const userMsg = {
+   175→      id: crypto.randomUUID(),
+   176→      role: 'user' as const,
+   177→      content: input.trim(),
+   178→      timestamp: new Date(),
+   179→    };
+   180→    addChatMessage(userMsg);
+   181→    setInput('');
+   182→    if (textareaRef.current) {
+   183→      textareaRef.current.style.height = 'auto';
+   184→    }
+   185→    setChatLoading(true);
+   186→    try {
+   187→      const res = await fetch('/api/chat', {
+   188→        method: 'POST',
+   189→        headers: { 'Content-Type': 'application/json' },
+   190→        body: JSON.stringify({
+   191→          messages: [...chatMessages, userMsg].map((m) => ({
+   192→            role: m.role,
+   193→            content: m.content,
+   194→          })),
+   195→          topic: selectedTopic || undefined,
+   196→        }),
+   197→      });
+   198→      const data = await res.json();
+   199→      addChatMessage({
+   200→        id: crypto.randomUUID(),
+   201→        role: 'assistant',
+   202→        content: data.response || 'Sorry, I could not generate a response.',
+   203→        timestamp: new Date(),
+   204→      });
+   205→    } catch {
+   206→      addChatMessage({
+   207→        id: crypto.randomUUID(),
+   208→        role: 'assistant',
+   209→        content: 'Something went wrong. Please try again.',
+   210→        timestamp: new Date(),
+   211→      });
+   212→    } finally {
+   213→      setChatLoading(false);
+   214→    }
+   215→  };
+   216→
+   217→  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+   218→    if (e.key === 'Enter' && !e.shiftKey) {
+   219→      e.preventDefault();
+   220→      handleSend();
+   221→    }
+   222→  };
+   223→
+   224→  const handleNewChat = () => {
+   225→    clearChat();
+   226→    setActiveConversation('');
+   227→  };
+   228→
+   229→  const handleSuggestionClick = (query: string) => {
+   230→    setInput(query);
+   231→    textareaRef.current?.focus();
+   232→  };
+   233→
+   234→  const handleCopyMessage = (id: string, content: string) => {
+   235→    navigator.clipboard.writeText(content);
+   236→    setCopiedId(id);
+   237→    setTimeout(() => setCopiedId(null), 2000);
+   238→  };
+   239→
+   240→  // Get sources from the last assistant message
+   241→  const lastAssistantMsg = [...chatMessages].reverse().find((m) => m.role === 'assistant');
+   242→  const sources = lastAssistantMsg?.sources;
+   243→
+   244→  return (
+   245→    <div className="h-screen w-full bg-background flex flex-col overflow-hidden">
+   246→      {/* Top bar */}
+   247→      <header className="h-14 border-b border-border flex items-center justify-between px-4 flex-shrink-0">
+   248→        <div className="flex items-center gap-3">
+   249→          <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+   250→            <Brain className="w-4 h-4 text-primary" />
+   251→          </div>
+   252→          <h1 className="text-sm font-semibold tracking-tight">CodeMentor AI</h1>
+   253→          <Badge variant="secondary" className="text-[10px] px-1.5 py-0">
+   254→            Tutor
+   255→          </Badge>
+   256→        </div>
+   257→        <div className="flex items-center gap-1">
+   258→          <Tooltip>
+   259→            <TooltipTrigger asChild>
+   260→              <Button
+   261→                variant="ghost"
+   262→                size="icon"
+   263→                className="h-8 w-8"
+   264→                onClick={() => setLeftCollapsed((c) => !c)}
+   265→              >
+   266→                {leftCollapsed ? (
+   267→                  <PanelLeftOpen className="w-4 h-4" />
+   268→                ) : (
+   269→                  <PanelLeftClose className="w-4 h-4" />
+   270→                )}
+   271→              </Button>
+   272→            </TooltipTrigger>
+   273→            <TooltipContent side="bottom">
+   274→              {leftCollapsed ? 'Show history' : 'Hide history'}
+   275→            </TooltipContent>
+   276→          </Tooltip>
+   277→          <Tooltip>
+   278→            <TooltipTrigger asChild>
+   279→              <Button
+   280→                variant="ghost"
+   281→                size="icon"
+   282→                className="h-8 w-8"
+   283→                onClick={() => setRightCollapsed((c) => !c)}
+   284→              >
+   285→                {rightCollapsed ? (
+   286→                  <PanelRightOpen className="w-4 h-4" />
+   287→                ) : (
+   288→                  <PanelRightClose className="w-4 h-4" />
+   289→                )}
+   290→              </Button>
+   291→            </TooltipTrigger>
+   292→            <TooltipContent side="bottom">
+   293→              {rightCollapsed ? 'Show context' : 'Hide context'}
+   294→            </TooltipContent>
+   295→          </Tooltip>
+   296→        </div>
+   297→      </header>
+   298→
+   299→      {/* 3-panel layout */}
+   300→      <PanelGroup direction="horizontal" className="flex-1">
+   301→        {/* ── Left Panel: Conversation History ─────────────────────── */}
+   302→        {!leftCollapsed && (
+   303→          <>
+   304→            <Panel defaultSize={18} minSize={14} maxSize={22} className="flex flex-col">
+   305→              <div className="flex flex-col h-full border-r border-border bg-card/30">
+   306→                <div className="p-3 flex-shrink-0">
+   307→                  <Button
+   308→                    onClick={handleNewChat}
+   309→                    className="w-full justify-start gap-2 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20"
+   310→                  >
+   311→                    <Plus className="w-4 h-4" />
+   312→                    New Chat
+   313→                  </Button>
+   314→                </div>
+   315→                <ScrollArea className="flex-1 px-3 pb-3">
+   316→                  <div className="space-y-1">
+   317→                    {MOCK_CONVERSATIONS.map((conv) => (
+   318→                      <button
+   319→                        key={conv.id}
+   320→                        onClick={() => setActiveConversation(conv.id)}
+   321→                        className={`w-full text-left px-3 py-2.5 rounded-lg text-sm transition-all group ${
+   322→                          activeConversation === conv.id
+   323→                            ? 'bg-primary/15 text-foreground border border-primary/20'
+   324→                            : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+   325→                        }`}
+   326→                      >
+   327→                        <div className="flex items-center gap-2">
+   328→                          <MessageSquare className="w-3.5 h-3.5 flex-shrink-0 opacity-60" />
+   329→                          <span className="truncate font-medium">{conv.title}</span>
+   330→                        </div>
+   331→                        <span className="text-xs text-muted-foreground/70 ml-5.5 mt-0.5 block">
+   332→                          {conv.timestamp}
+   333→                        </span>
+   334→                      </button>
+   335→                    ))}
+   336→                  </div>
+   337→                </ScrollArea>
+   338→              </div>
+   339→            </Panel>
+   340→            <ResizeHandle />
+   341→          </>
+   342→        )}
+   343→
+   344→        {/* ── Center Panel: Chat Area ──────────────────────────────── */}
+   345→        <Panel minSize={40} className="flex flex-col">
+   346→          <div className="flex flex-col h-full">
+   347→            {chatMessages.length === 0 ? (
+   348→              /* Welcome state */
+   349→              <div className="flex-1 flex flex-col items-center justify-center px-6">
+   350→                <motion.div
+   351→                  initial={{ opacity: 0, scale: 0.9 }}
+   352→                  animate={{ opacity: 1, scale: 1 }}
+   353→                  transition={{ duration: 0.5, ease: 'easeOut' }}
+   354→                  className="text-center max-w-lg"
+   355→                >
+   356→                  <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-primary/15 flex items-center justify-center glow-cyan-sm">
+   357→                    <Brain className="w-8 h-8 text-primary" />
+   358→                  </div>
+   359→                  <h2 className="text-2xl font-bold mb-2 gradient-text">
+   360→                    How can I help you learn today?
+   361→                  </h2>
+   362→                  <p className="text-muted-foreground text-sm mb-8">
+   363→                    Ask me about data structures, algorithms, system design, or any programming topic.
+   364→                  </p>
+   365→
+   366→                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+   367→                    {QUICK_START_SUGGESTIONS.map((s, i) => (
+   368→                      <motion.button
+   369→                        key={s.label}
+   370→                        initial={{ opacity: 0, y: 15 }}
+   371→                        animate={{ opacity: 1, y: 0 }}
+   372→                        transition={{ delay: 0.1 * i, duration: 0.4 }}
+   373→                        onClick={() => handleSuggestionClick(s.query)}
+   374→                        className="flex items-start gap-3 p-4 rounded-xl border border-border bg-card/50 hover:bg-card hover:border-primary/30 transition-all text-left group"
+   375→                      >
+   376→                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/20 transition-colors">
+   377→                          <s.icon className="w-4 h-4 text-primary" />
+   378→                        </div>
+   379→                        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors leading-snug">
+   380→                          {s.label}
+   381→                        </span>
+   382→                      </motion.button>
+   383→                    ))}
+   384→                  </div>
+   385→                </motion.div>
+   386→              </div>
+   387→            ) : (
+   388→              /* Messages */
+   389→              <ScrollArea className="flex-1 px-4 py-4">
+   390→                <div className="max-w-3xl mx-auto space-y-4">
+   391→                  <AnimatePresence mode="popLayout">
+   392→                    {chatMessages.map((msg) => (
+   393→                      <motion.div
+   394→                        key={msg.id}
+   395→                        initial={{ opacity: 0, y: 12 }}
+   396→                        animate={{ opacity: 1, y: 0 }}
+   397→                        exit={{ opacity: 0, y: -12 }}
+   398→                        transition={{ duration: 0.3 }}
+   399→                        className={`flex items-start gap-3 ${
+   400→                          msg.role === 'user' ? 'flex-row-reverse' : 'flex-row'
+   401→                        }`}
+   402→                      >
+   403→                        {/* Avatar */}
+   404→                        {msg.role === 'assistant' && (
+   405→                          <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center mt-1">
+   406→                            <Bot className="w-4 h-4 text-primary" />
+   407→                          </div>
+   408→                        )}
+   409→
+   410→                        {/* Bubble */}
+   411→                        <div
+   412→                          className={`relative max-w-[80%] ${
+   413→                            msg.role === 'user'
+   414→                              ? 'bg-primary/15 border border-primary/25 rounded-2xl rounded-tr-sm px-4 py-3'
+   415→                              : 'bg-card border border-border rounded-2xl rounded-tl-sm px-4 py-3'
+   416→                          }`}
+   417→                        >
+   418→                          {msg.role === 'assistant' && (
+   419→                            <Badge
+   420→                              variant="secondary"
+   421→                              className="absolute -top-2.5 left-3 text-[10px] px-1.5 py-0 bg-primary/20 text-primary border-0"
+   422→                            >
+   423→                              AI
+   424→                            </Badge>
+   425→                          )}
+   426→
+   427→                          <div className="prose prose-invert prose-sm max-w-none [&_p]:mb-2 [&_p:last-child]:mb-0 [&_ul]:my-2 [&_ol]:my-2 [&_li]:my-0.5 [&_h1]:text-base [&_h2]:text-base [&_h3]:text-sm [&_h4]:text-sm [&_strong]:text-foreground [&_code]:text-primary/90 [&_code:not(pre_*)]:bg-muted [&_code:not(pre_*)]:px-1.5 [&_code:not(pre_*)]:py-0.5 [&_code:not(pre_*)]:rounded [&_code:not(pre_*)]:text-xs [&_table]:text-xs [&_th]:border-border [&_td]:border-border [&_th]:p-2 [&_td]:p-2 [&_blockquote]:border-primary/30">
+   428→                            <ReactMarkdown
+   429→                              components={{
+   430→                                pre({ children }) {
+   431→                                  return <>{children}</>;
+   432→                                },
+   433→                                code({ className: codeClassName, children, ...props }) {
+   434→                                  const isInline = !codeClassName;
+   435→                                  const match = /language-(\w+)/.exec(codeClassName || '');
+   436→                                  const codeString = String(children).replace(/\n$/, '');
+   437→
+   438→                                  if (isInline) {
+   439→                                    return (
+   440→                                      <code className={codeClassName} {...props}>
+   441→                                        {children}
+   442→                                      </code>
+   443→                                    );
+   444→                                  }
+   445→
+   446→                                  return (
+   447→                                    <CodeBlock className={codeClassName}>
+   448→                                      {codeString}
+   449→                                    </CodeBlock>
+   450→                                  );
+   451→                                },
+   452→                              }}
+   453→                            >
+   454→                              {msg.content}
+   455→                            </ReactMarkdown>
+   456→                          </div>
+   457→
+   458→                          {/* Copy message button */}
+   459→                          <div className="flex items-center justify-end mt-2 gap-1">
+   460→                            <button
+   461→                              onClick={() => handleCopyMessage(msg.id, msg.content)}
+   462→                              className="text-muted-foreground/50 hover:text-muted-foreground transition-colors p-1 rounded"
+   463→                              aria-label="Copy message"
+   464→                            >
+   465→                              {copiedId === msg.id ? (
+   466→                                <Check className="w-3.5 h-3.5 text-success" />
+   467→                              ) : (
+   468→                                <Copy className="w-3.5 h-3.5" />
+   469→                              )}
+   470→                            </button>
+   471→                          </div>
+   472→                        </div>
+   473→                      </motion.div>
+   474→                    ))}
+   475→                  </AnimatePresence>
+   476→
+   477→                  {/* Typing indicator */}
+   478→                  <AnimatePresence>
+   479→                    {chatLoading && <TypingIndicator />}
+   480→                  </AnimatePresence>
+   481→
+   482→                  <div ref={messagesEndRef} />
+   483→                </div>
+   484→              </ScrollArea>
+   485→            )}
+   486→
+   487→            {/* Input area */}
+   488→            <div className="flex-shrink-0 border-t border-border bg-card/30 p-4">
+   489→              <div className="max-w-3xl mx-auto">
+   490→                <div className="flex items-end gap-2 bg-card border border-border rounded-2xl px-3 py-2 focus-within:border-primary/40 transition-colors">
+   491→                  <Textarea
+   492→                    ref={textareaRef}
+   493→                    value={input}
+   494→                    onChange={handleTextareaChange}
+   495→                    onKeyDown={handleKeyDown}
+   496→                    placeholder="Ask me anything about programming..."
+   497→                    className="flex-1 min-h-[36px] max-h-[160px] border-0 bg-transparent resize-none focus-visible:ring-0 focus-visible:ring-offset-0 p-0 text-sm placeholder:text-muted-foreground/50"
+   498→                    rows={1}
+   499→                    disabled={chatLoading}
+   500→                  />
+   501→                  <Tooltip>
+   502→                    <TooltipTrigger asChild>
+   503→                      <Button
+   504→                        size="icon"
+   505→                        className="h-8 w-8 rounded-xl flex-shrink-0 bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-40"
+   506→                        onClick={handleSend}
+   507→                        disabled={!input.trim() || chatLoading}
+   508→                      >
+   509→                        <Send className="w-4 h-4" />
+   510→                      </Button>
+   511→                    </TooltipTrigger>
+   512→                    <TooltipContent side="top">Send message</TooltipContent>
+   513→                  </Tooltip>
+   514→                </div>
+   515→                <div className="flex items-center justify-between mt-2 px-1">
+   516→                  <Select value={selectedTopic} onValueChange={setSelectedTopic}>
+   517→                    <SelectTrigger className="w-44 h-7 text-xs border-border/50 bg-transparent">
+   518→                      <SelectValue placeholder="Select topic (optional)" />
+   519→                    </SelectTrigger>
+   520→                    <SelectContent>
+   521→                      {TOPIC_OPTIONS.map((t) => (
+   522→                        <SelectItem key={t.value} value={t.value} className="text-xs">
+   523→                          {t.label}
+   524→                        </SelectItem>
+   525→                      ))}
+   526→                    </SelectContent>
+   527→                  </Select>
+   528→                  <span className="text-[10px] text-muted-foreground/50">
+   529→                    Press Enter to send, Shift+Enter for new line
+   530→                  </span>
+   531→                </div>
+   532→              </div>
+   533→            </div>
+   534→          </div>
+   535→        </Panel>
+   536→
+   537→        {/* ── Right Panel: Context ─────────────────────────────────── */}
+   538→        {!rightCollapsed && (
+   539→          <>
+   540→            <ResizeHandle />
+   541→            <Panel defaultSize={20} minSize={16} maxSize={25} className="flex flex-col">
+   542→              <div className="flex flex-col h-full border-l border-border bg-card/30">
+   543→                <ScrollArea className="flex-1 px-4 py-4">
+   544→                  <div className="space-y-6">
+   545→                    {/* Context header */}
+   546→                    <div>
+   547→                      <h3 className="text-sm font-semibold flex items-center gap-2 mb-3">
+   548→                        <Sparkles className="w-4 h-4 text-primary" />
+   549→                        Context
+   550→                      </h3>
+   551→                    </div>
+   552→
+   553→                    {/* Related Topics */}
+   554→                    <div>
+   555→                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+   556→                        Related Topics
+   557→                      </h4>
+   558→                      <div className="flex flex-wrap gap-2">
+   559→                        {RELATED_TOPICS.map((topic) => (
+   560→                          <Badge
+   561→                            key={topic}
+   562→                            variant="secondary"
+   563→                            className="text-xs cursor-pointer hover:bg-primary/15 hover:text-primary hover:border-primary/30 border border-transparent transition-all"
+   564→                          >
+   565→                            <ChevronRight className="w-3 h-3 mr-1 opacity-50" />
+   566→                            {topic}
+   567→                          </Badge>
+   568→                        ))}
+   569→                      </div>
+   570→                    </div>
+   571→
+   572→                    {/* Sources */}
+   573→                    <div>
+   574→                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+   575→                        Sources
+   576→                      </h4>
+   577→                      {sources && sources.length > 0 ? (
+   578→                        <div className="space-y-2">
+   579→                          {sources.map((source, i) => (
+   580→                            <div
+   581→                              key={i}
+   582→                              className="flex items-start gap-2 p-2.5 rounded-lg bg-background/50 border border-border text-xs text-muted-foreground hover:text-foreground transition-colors"
+   583→                            >
+   584→                              <BookOpen className="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-primary/70" />
+   585→                              <span className="leading-relaxed">{source}</span>
+   586→                            </div>
+   587→                          ))}
+   588→                        </div>
+   589→                      ) : (
+   590→                        <div className="flex flex-col items-center justify-center py-6 text-center">
+   591→                          <div className="w-10 h-10 rounded-full bg-muted/50 flex items-center justify-center mb-2">
+   592→                            <BookOpen className="w-4 h-4 text-muted-foreground/40" />
+   593→                          </div>
+   594→                          <p className="text-xs text-muted-foreground/50">
+   595→                            Sources will appear here
+   596→                          </p>
+   597→                        </div>
+   598→                      )}
+   599→                    </div>
+   600→
+   601→                    {/* Quick Actions */}
+   602→                    <div>
+   603→                      <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-3">
+   604→                        Quick Actions
+   605→                      </h4>
+   606→                      <div className="space-y-2">
+   607→                        {[
+   608→                          { icon: Sparkles, label: 'Generate Quiz' },
+   609→                          { icon: MessageSquare, label: 'Start Interview' },
+   610→                          { icon: BookOpen, label: 'Show Code Example' },
+   611→                        ].map((action) => (
+   612→                          <Button
+   613→                            key={action.label}
+   614→                            variant="outline"
+   615→                            className="w-full justify-start gap-2 h-9 text-xs border-border/50 hover:border-primary/30 hover:bg-primary/5 hover:text-primary transition-all"
+   616→                          >
+   617→                            <action.icon className="w-3.5 h-3.5" />
+   618→                            {action.label}
+   619→                          </Button>
+   620→                        ))}
+   621→                      </div>
+   622→                    </div>
+   623→                  </div>
+   624→                </ScrollArea>
+   625→              </div>
+   626→            </Panel>
+   627→          </>
+   628→        )}
+   629→      </PanelGroup>
+   630→    </div>
+   631→  );
+   632→}
