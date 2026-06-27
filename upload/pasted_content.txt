@@ -1,0 +1,1791 @@
+MASTER PROJECT GENERATION PROMPT
+
+You are a Senior AI Engineer, Staff Software Engineer, MLOps Engineer, Security Engineer, Cloud Architect, and Product Architect.
+
+Your task is to build a production-grade AI Tutor for Programming Education using RAG, Agentic AI, LLMs, and modern software engineering best practices.
+
+This project must be portfolio-worthy, industry-grade, scalable, secure, cloud-ready, and demonstrate skills expected from AI Engineers in 2026.
+
+---
+
+IMPORTANT DEVELOPMENT RULES
+
+1. DO NOT generate the entire project at once.
+2. Development MUST happen in phases.
+3. Before starting implementation, generate a detailed implementation roadmap.
+4. At the end of every phase:
+   - Generate updated documentation.
+   - Generate updated PROJECT_CONTEXT.md.
+   - Summarize completed work.
+   - Summarize architecture decisions.
+   - Summarize database changes.
+   - Summarize API changes.
+   - Summarize dependency changes.
+5. After each phase, STOP and wait for user approval before proceeding.
+6. Never automatically continue to the next phase.
+7. Ask:
+
+"Phase X is complete. Review the summary and approve continuation to Phase X+1."
+
+---
+
+PROJECT OBJECTIVE
+
+Build a SaaS platform that functions as an AI Programming Tutor.
+
+The platform must help students learn:
+
+- Data Structures
+- Algorithms
+- Java
+- Python
+- SQL
+- JavaScript
+- System Design
+- Interview Preparation
+- LeetCode
+
+The platform must provide:
+
+- Personalized tutoring
+- AI-powered explanations
+- Quiz generation
+- Code review
+- Interview preparation
+- Progress tracking
+- Adaptive learning
+- GitHub repository analysis
+- RAG-powered educational assistance
+
+---
+
+CORE DIFFERENTIATOR
+
+This must NOT be a simple chatbot.
+
+The system must include:
+
+- Agentic AI
+- RAG
+- Hybrid Search
+- Evaluation Framework
+- Hallucination Detection
+- Learning Analytics
+- Observability
+- Cost Tracking
+- Enterprise Security
+
+---
+
+TECH STACK
+
+Frontend:
+
+- Next.js 15
+- TypeScript
+- Tailwind CSS
+- ShadCN UI
+- Zustand
+- TanStack Query
+
+Backend:
+
+- FastAPI
+- Python 3.12
+
+Dependency Management:
+
+- uv
+- pyproject.toml
+- uv.lock
+
+Database:
+
+- PostgreSQL
+
+Vector Database:
+
+- Qdrant
+
+Caching:
+
+- Redis
+
+Queue:
+
+- Celery
+- Redis Broker
+
+AI Framework:
+
+- LangGraph
+- LangChain
+
+Embeddings:
+
+- BAAI/bge-small-en-v1.5
+
+LLM Support:
+
+- OpenAI
+- Gemini
+- Ollama
+- Local Llama Models
+
+Observability:
+
+- Prometheus
+- Grafana
+- OpenTelemetry
+
+Error Monitoring:
+
+- Sentry
+
+Deployment:
+
+- Docker
+- Docker Compose
+- Kubernetes
+
+CI/CD:
+
+- GitHub Actions
+
+---
+
+DOCUMENTATION REQUIREMENTS
+
+Generate and maintain:
+
+docs/
+
+- PRD.md
+- Architecture.md
+- Database_Schema.md
+- API_Spec.md
+- Security_Architecture.md
+- Deployment_Guide.md
+- Development_Roadmap.md
+- Project_Context.md
+- Progress_Log.md
+
+These documents are the source of truth.
+
+Every phase must update them.
+
+The project must be able to continue from a new AI session using only these documents.
+
+---
+
+PROJECT_CONTEXT REQUIREMENT
+
+At the end of every phase generate:
+
+PROJECT_CONTEXT.md
+
+It must contain:
+
+- Current architecture
+- Folder structure
+- Dependencies
+- APIs
+- Database tables
+- Services
+- Security decisions
+- Deployment decisions
+- Pending work
+- Current phase
+
+The document must allow another AI session to continue development with zero prior chat history.
+
+---
+
+PHASES
+
+Phase 0:
+Planning
+
+Generate:
+
+- PRD
+- Architecture
+- Folder Structure
+- Roadmap
+- Database Design
+- Security Design
+- Agent Architecture
+- RAG Architecture
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 1:
+Project Foundation
+
+Generate:
+
+- Repository Structure
+- uv Setup
+- Docker Setup
+- FastAPI Base
+- Next.js Base
+- Environment Configuration
+- Logging Setup
+- Config Management
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 2:
+Authentication & User Management
+
+Generate:
+
+- Registration
+- Login
+- Refresh Tokens
+- Password Reset
+- Email Verification
+- RBAC
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 3:
+Database Layer
+
+Generate:
+
+- PostgreSQL Schema
+- SQLAlchemy Models
+- Alembic Migrations
+- Repository Pattern
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 4:
+Document Ingestion
+
+Generate:
+
+- PDF Parsing
+- DOCX Parsing
+- Markdown Parsing
+- Chunking Pipeline
+- Embedding Pipeline
+- Qdrant Integration
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 5:
+RAG Engine
+
+Generate:
+
+- Retrieval Pipeline
+- Hybrid Search
+- BM25
+- Vector Search
+- Metadata Filtering
+- Re-ranking
+- Context Compression
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 6:
+Agentic AI
+
+Generate:
+
+- Supervisor Agent
+- Teaching Agent
+- Quiz Agent
+- Roadmap Agent
+- Code Review Agent
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 7:
+AI Tutor Features
+
+Generate:
+
+- Tutor Chat
+- Quiz Generation
+- Learning Roadmaps
+- Adaptive Learning
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 8:
+Code Review System
+
+Generate:
+
+- Java Review
+- Python Review
+- SQL Review
+- JavaScript Review
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 9:
+Interview Preparation
+
+Generate:
+
+- Mock Interviews
+- Coding Interviews
+- Behavioral Interviews
+- Evaluation System
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 10:
+GitHub Integration
+
+Generate:
+
+- GitHub OAuth
+- Repository Analysis
+- Skill Gap Detection
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 11:
+Analytics
+
+Generate:
+
+- Progress Tracking
+- Learning Analytics
+- Weak Topic Detection
+- Adaptive Difficulty
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 12:
+Evaluation & AI Safety
+
+Generate:
+
+- RAGAS
+- DeepEval
+- Hallucination Detection
+- Prompt Injection Detection
+- Jailbreak Detection
+- Toxicity Detection
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 13:
+Observability
+
+Generate:
+
+- Prometheus
+- Grafana
+- OpenTelemetry
+- Sentry
+
+STOP.
+
+Wait for approval.
+
+---
+
+Phase 14:
+Deployment
+
+Generate:
+
+- Docker Compose
+- Kubernetes
+- CI/CD
+- Monitoring Setup
+
+STOP.
+
+Wait for approval.
+
+---
+
+RAG REQUIREMENTS
+
+Implement:
+
+- Semantic Chunking
+- Hybrid Search
+- BM25
+- Dense Retrieval
+- Metadata Filtering
+- Parent Child Retrieval
+- Query Rewriting
+- Re-ranking
+- Context Compression
+- Retrieval Caching
+
+---
+
+AGENT REQUIREMENTS
+
+Implement LangGraph.
+
+Agents:
+
+Supervisor Agent
+
+Teaching Agent
+
+Quiz Agent
+
+Roadmap Agent
+
+Code Review Agent
+
+Interview Agent
+
+Analytics Agent
+
+Use proper state management.
+
+---
+
+CODE REVIEW FEATURES
+
+Support:
+
+- Java
+- Python
+- SQL
+- JavaScript
+
+Review:
+
+- Bugs
+- Complexity
+- Readability
+- Security
+- Optimization
+
+Generate:
+
+- Suggestions
+- Complexity Analysis
+- Refactored Code
+
+---
+
+GITHUB INTEGRATION
+
+Analyze repositories.
+
+Detect:
+
+- Strong Skills
+- Weak Skills
+- Missing Topics
+
+Generate learning plans.
+
+---
+
+PERFORMANCE REQUIREMENTS
+
+Frontend:
+
+- Debouncing
+- Throttling
+- Lazy Loading
+- Code Splitting
+- Virtualization
+- Request Cancellation
+- React Memoization
+
+Backend:
+
+- Async APIs
+- Connection Pooling
+- Query Optimization
+- Redis Caching
+- Response Compression
+- Background Jobs
+
+---
+
+SECURITY REQUIREMENTS
+
+Implement:
+
+- JWT Authentication
+- Refresh Token Rotation
+- RBAC
+- API Rate Limiting
+- User Throttling
+- IP Throttling
+- Brute Force Protection
+- CSRF Protection
+- XSS Protection
+- Input Validation
+- Output Validation
+- Secret Management
+- Audit Logging
+- Secure Password Hashing
+- OWASP Top 10 Compliance
+
+Never store secrets in source code.
+
+---
+
+AI SAFETY REQUIREMENTS
+
+Implement:
+
+- Prompt Injection Detection
+- Jailbreak Detection
+- Hallucination Detection
+- Toxicity Detection
+- Output Verification
+- Source Attribution
+
+---
+
+COST OPTIMIZATION
+
+Implement:
+
+- Prompt Caching
+- Semantic Cache
+- Redis Cache
+- Token Tracking
+- Cost Tracking
+- Dynamic Model Routing
+
+Simple Queries:
+
+- Small Models
+
+Complex Queries:
+
+- Large Models
+
+---
+
+OBSERVABILITY
+
+Track:
+
+- API Latency
+- Retrieval Latency
+- LLM Latency
+- Token Usage
+- Cost Per Request
+- Cache Hit Ratio
+- User Activity
+
+Generate Grafana Dashboards.
+
+---
+
+TESTING
+
+Generate:
+
+- Unit Tests
+- Integration Tests
+- API Tests
+- Agent Tests
+- RAG Tests
+
+Minimum Coverage:
+
+85%
+
+---
+
+QUALITY REQUIREMENTS
+
+Follow:
+
+- Clean Architecture
+- SOLID Principles
+- Dependency Injection
+- Repository Pattern
+- Service Layer Pattern
+- Async First Design
+
+No placeholder implementations.
+No TODO comments.
+No mock business logic.
+
+Every generated component must be production-ready.
+
+---
+
+STARTING INSTRUCTION
+
+Begin with Phase 0 only.
+
+Generate:
+
+1. Product Requirements Document
+2. High-Level Architecture
+3. Database Architecture
+4. Security Architecture
+5. Agent Architecture
+6. RAG Architecture
+7. Folder Structure
+8. Development Roadmap
+9. Documentation Strategy
+10. Initial PROJECT_CONTEXT.md
+
+Do not generate implementation code yet.
+
+After Phase 0 is complete, stop and wait for approval before continuing.
+
+
+Architecture Deliverables (Mandatory)
+During Phase 0 generate detailed documentation for:
+1. Repository Structure
+Explain every directory and file.
+Example:
+Plain text
+ai-tutor/
+
+docs/
+frontend/
+backend/
+infrastructure/
+monitoring/
+scripts/
+tests/
+For every folder explain:
+Purpose
+Responsibilities
+Dependencies
+2. Frontend Architecture
+Generate complete page map.
+Pages:
+Plain text
+/
+├── Landing Page
+├── Login
+├── Register
+├── Dashboard
+├── AI Tutor
+├── Learning Roadmap
+├── Quiz Center
+├── Code Review
+├── Interview Mode
+├── Analytics
+├── Profile
+└── Admin
+For each page provide:
+Purpose
+Features
+APIs used
+Components used
+3. Component Architecture
+Generate:
+Plain text
+components/
+
+common/
+layout/
+auth/
+chat/
+quiz/
+roadmap/
+analytics/
+interview/
+code-review/
+admin/
+Explain every component group.
+4. Backend Architecture
+Generate complete module breakdown.
+Plain text
+backend/
+
+api/
+core/
+services/
+repositories/
+models/
+agents/
+rag/
+security/
+analytics/
+workers/
+Explain:
+Responsibility
+Dependencies
+Interfaces
+5. Database Architecture
+Generate:
+ER Diagram
+Table Relationships
+Foreign Keys
+Index Strategy
+Partitioning Strategy
+6. API Architecture
+Generate all endpoints.
+Example:
+Plain text
+/api/v1/auth
+/api/v1/users
+/api/v1/chat
+/api/v1/quiz
+/api/v1/roadmap
+/api/v1/interview
+/api/v1/admin
+For every endpoint explain:
+Request
+Response
+Authentication
+Rate Limits
+7. Agent Architecture
+Generate:
+Plain text
+Supervisor Agent
+├── Tutor Agent
+├── Quiz Agent
+├── Roadmap Agent
+├── Interview Agent
+├── Code Review Agent
+└── Analytics Agent
+Explain:
+State Flow
+Communication
+Memory
+Failure Handling
+8. RAG Architecture
+Generate:
+Plain text
+Upload
+ ↓
+Parser
+ ↓
+Chunker
+ ↓
+Embedding
+ ↓
+Qdrant
+ ↓
+Retriever
+ ↓
+Reranker
+ ↓
+LLM
+Explain every step.
+9. Deployment Architecture
+Generate:
+Plain text
+User
+ ↓
+Cloudflare
+ ↓
+Frontend
+ ↓
+API Gateway
+ ↓
+FastAPI
+ ↓
+Redis
+ ↓
+PostgreSQL
+ ↓
+Qdrant
+Include:
+Scaling strategy
+Load balancing
+Backup strategy
+10. Security Architecture
+Generate threat model.
+Cover:
+Authentication
+Authorization
+Secrets
+Prompt Injection
+RAG Security
+API Security
+Database Security
+11. Documentation Architecture
+Generate and maintain:
+
+docs/
+
+PRD.md
+Architecture.md
+Frontend_Architecture.md
+Backend_Architecture.md
+Database_Schema.md
+Security_Architecture.md
+API_Spec.md
+Deployment_Guide.md
+Project_Context.md
+Progress_Log.md
+
+Every phase must update these documents.
+
+UI/UX DESIGN SYSTEM REQUIREMENTS
+
+The application must follow a premium AI SaaS design language inspired by MotionSites, Linear, Vercel, Stripe, Notion, Perplexity and modern high-converting SaaS products.
+
+Do not generate generic AI startup designs.
+
+---
+
+DESIGN PRINCIPLES
+
+Prioritize:
+
+- Clarity over decoration
+- Product-first design
+- Strong visual hierarchy
+- Fast loading
+- Accessibility
+- Mobile-first responsiveness
+
+Avoid:
+
+- Random gradients
+- Excessive glassmorphism
+- Overused AI startup templates
+- Animation overload
+- Multiple competing CTAs
+
+---
+
+DESIGN SYSTEM
+
+Theme:
+
+Dark-first
+
+Color Palette:
+
+- Background: Near-black
+- Surface: Elevated dark cards
+- Accent: Electric blue / cyan
+- Success: Green
+- Warning: Amber
+- Error: Red
+
+Typography:
+
+- Inter
+- Geist
+- Plus Jakarta Sans
+
+Spacing:
+
+8px design system
+
+Border Radius:
+
+Consistent modern SaaS radius
+
+Icons:
+
+Lucide React
+
+---
+
+LANDING PAGE
+
+The landing page must look like a funded AI startup.
+
+Sections:
+
+1. Navigation
+2. Hero
+3. Product Demo
+4. Problem Statement
+5. Solution Overview
+6. Features
+7. AI Agent Workflow Visualization
+8. Personalized Learning Demo
+9. Code Review Demo
+10. Interview Mode Demo
+11. Analytics Dashboard Preview
+12. Testimonials
+13. FAQ
+14. Pricing
+15. Final CTA
+16. Footer
+
+---
+
+HERO SECTION
+
+Requirements:
+
+- Strong product screenshot
+- Product mockup
+- Interactive dashboard preview
+- Animated background
+- Clear headline
+
+Example Style:
+
+"Master Programming Faster with an AI Tutor That Actually Understands Your Learning Journey"
+
+Primary CTA:
+Start Learning Free
+
+Secondary CTA:
+Watch Demo
+
+---
+
+DASHBOARD PAGE
+
+Sections:
+
+- Welcome Banner
+- Progress Overview
+- Learning Streak
+- Recent Activity
+- Recommended Topics
+- Weak Topics
+- Upcoming Quizzes
+- AI Recommendations
+
+Widgets must feel like:
+
+Linear
+Vercel
+Stripe Dashboard
+
+---
+
+AI TUTOR PAGE
+
+Layout:
+
+Left:
+
+- Conversation History
+
+Center:
+
+- Chat Interface
+
+Right:
+
+- Sources
+- Retrieved Context
+- Recommended Topics
+
+Features:
+
+- Streaming Responses
+- Code Formatting
+- Syntax Highlighting
+- Citation Display
+
+---
+
+QUIZ PAGE
+
+Sections:
+
+- Quiz Categories
+- Difficulty Filters
+- Quiz History
+- Performance Analytics
+
+Must include:
+
+- Progress indicators
+- Timers
+- Achievement system
+
+---
+
+ROADMAP PAGE
+
+Visual Roadmap:
+
+Arrays
+↓
+HashMaps
+↓
+Sliding Window
+↓
+Trees
+↓
+Graphs
+↓
+Dynamic Programming
+
+Interactive node-based visualization.
+
+---
+
+CODE REVIEW PAGE
+
+Layout:
+
+Left:
+Code Editor
+
+Right:
+Review Results
+
+Include:
+
+- Complexity Analysis
+- Suggestions
+- Refactored Code
+- Security Warnings
+
+---
+
+INTERVIEW MODE PAGE
+
+Design:
+
+Real interview simulation.
+
+Include:
+
+- Timer
+- Current Question
+- Notes Area
+- AI Interviewer Panel
+
+---
+
+ANALYTICS PAGE
+
+Charts:
+
+- Learning Progress
+- Skill Growth
+- Topic Mastery
+- Quiz Scores
+- Interview Scores
+
+Use:
+
+- Recharts
+
+---
+
+ADMIN DASHBOARD
+
+Sections:
+
+- User Management
+- Document Management
+- AI Usage Metrics
+- Cost Analytics
+- Security Events
+- System Health
+
+---
+
+DESIGN DELIVERABLES
+
+Before coding:
+
+Generate:
+
+Frontend_Architecture.md
+
+Include:
+
+- Complete page map
+- Component hierarchy
+- State management architecture
+- Route structure
+- Layout system
+- Design tokens
+- Typography system
+- Color system
+- Responsive breakpoints
+
+Generate wireframes in markdown format before implementation.
+
+Do not begin frontend implementation until the UI architecture is approved.
+
+Even Better
+Ask the model to create:
+Plain text
+docs/PROJECT_CONTEXT.md
+This file is the most important file in the project.
+Every future model can simply read:
+Plain text
+PRD.md
+Architecture.md
+PROJECT_CONTEXT.md
+Progress_Log.md
+and immediately know:
+what is finished
+what is pending
+where to continue.
+
+Going Forward (Very Important)
+At the end of EVERY phase, force the AI to update:
+Plain text
+docs/PROJECT_CONTEXT.md
+docs/Progress_Log.md
+Example:
+Markdown
+# Current Phase
+
+Phase 3
+
+# Completed
+
+✅ Authentication
+✅ JWT
+✅ RBAC
+
+# Pending
+
+⬜ PostgreSQL Models
+⬜ Alembic Migrations
+
+# Next Phase
+
+Phase 4 - Document Ingestion
+Then even if:
+Codex limit is reached
+Antigravity limit is reached
+You switch accounts
+You switch models
+you simply paste:
+Plain text
+Read docs/PROJECT_CONTEXT.md
+
+Continue from the next pending phase.
+
+Do not modify previous architecture decisions.
+and the new model can continue almost seamlessly.
+
+
+
+Architecture Deliverables (Mandatory)
+During Phase 0 generate detailed documentation for:
+1. Repository Structure
+Explain every directory and file.
+Example:
+Plain text
+ai-tutor/
+
+docs/
+frontend/
+backend/
+infrastructure/
+monitoring/
+scripts/
+tests/
+For every folder explain:
+Purpose
+Responsibilities
+Dependencies
+2. Frontend Architecture
+Generate complete page map.
+Pages:
+Plain text
+/
+├── Landing Page
+├── Login
+├── Register
+├── Dashboard
+├── AI Tutor
+├── Learning Roadmap
+├── Quiz Center
+├── Code Review
+├── Interview Mode
+├── Analytics
+├── Profile
+└── Admin
+For each page provide:
+Purpose
+Features
+APIs used
+Components used
+3. Component Architecture
+Generate:
+Plain text
+components/
+
+common/
+layout/
+auth/
+chat/
+quiz/
+roadmap/
+analytics/
+interview/
+code-review/
+admin/
+Explain every component group.
+4. Backend Architecture
+Generate complete module breakdown.
+Plain text
+backend/
+
+api/
+core/
+services/
+repositories/
+models/
+agents/
+rag/
+security/
+analytics/
+workers/
+Explain:
+Responsibility
+Dependencies
+Interfaces
+5. Database Architecture
+Generate:
+ER Diagram
+Table Relationships
+Foreign Keys
+Index Strategy
+Partitioning Strategy
+6. API Architecture
+Generate all endpoints.
+Example:
+Plain text
+/api/v1/auth
+/api/v1/users
+/api/v1/chat
+/api/v1/quiz
+/api/v1/roadmap
+/api/v1/interview
+/api/v1/admin
+For every endpoint explain:
+Request
+Response
+Authentication
+Rate Limits
+7. Agent Architecture
+Generate:
+Plain text
+Supervisor Agent
+├── Tutor Agent
+├── Quiz Agent
+├── Roadmap Agent
+├── Interview Agent
+├── Code Review Agent
+└── Analytics Agent
+Explain:
+State Flow
+Communication
+Memory
+Failure Handling
+8. RAG Architecture
+Generate:
+Plain text
+Upload
+ ↓
+Parser
+ ↓
+Chunker
+ ↓
+Embedding
+ ↓
+Qdrant
+ ↓
+Retriever
+ ↓
+Reranker
+ ↓
+LLM
+Explain every step.
+9. Deployment Architecture
+Generate:
+Plain text
+User
+ ↓
+Cloudflare
+ ↓
+Frontend
+ ↓
+API Gateway
+ ↓
+FastAPI
+ ↓
+Redis
+ ↓
+PostgreSQL
+ ↓
+Qdrant
+Include:
+Scaling strategy
+Load balancing
+Backup strategy
+10. Security Architecture
+Generate threat model.
+Cover:
+Authentication
+Authorization
+Secrets
+Prompt Injection
+RAG Security
+API Security
+Database Security
+11. Documentation Architecture
+Generate and maintain:
+
+docs/
+
+PRD.md
+Architecture.md
+Frontend_Architecture.md
+Backend_Architecture.md
+Database_Schema.md
+Security_Architecture.md
+API_Spec.md
+Deployment_Guide.md
+Project_Context.md
+Progress_Log.md
+
+Every phase must update these documents.
+
+UI/UX DESIGN SYSTEM REQUIREMENTS
+
+The application must follow a premium AI SaaS design language inspired by MotionSites, Linear, Vercel, Stripe, Notion, Perplexity and modern high-converting SaaS products.
+
+Do not generate generic AI startup designs.
+
+---
+
+DESIGN PRINCIPLES
+
+Prioritize:
+
+- Clarity over decoration
+- Product-first design
+- Strong visual hierarchy
+- Fast loading
+- Accessibility
+- Mobile-first responsiveness
+
+Avoid:
+
+- Random gradients
+- Excessive glassmorphism
+- Overused AI startup templates
+- Animation overload
+- Multiple competing CTAs
+
+---
+
+DESIGN SYSTEM
+
+Theme:
+
+Dark-first
+
+Color Palette:
+
+- Background: Near-black
+- Surface: Elevated dark cards
+- Accent: Electric blue / cyan
+- Success: Green
+- Warning: Amber
+- Error: Red
+
+Typography:
+
+- Inter
+- Geist
+- Plus Jakarta Sans
+
+Spacing:
+
+8px design system
+
+Border Radius:
+
+Consistent modern SaaS radius
+
+Icons:
+
+Lucide React
+
+---
+
+LANDING PAGE
+
+The landing page must look like a funded AI startup.
+
+Sections:
+
+1. Navigation
+2. Hero
+3. Product Demo
+4. Problem Statement
+5. Solution Overview
+6. Features
+7. AI Agent Workflow Visualization
+8. Personalized Learning Demo
+9. Code Review Demo
+10. Interview Mode Demo
+11. Analytics Dashboard Preview
+12. Testimonials
+13. FAQ
+14. Pricing
+15. Final CTA
+16. Footer
+
+---
+
+HERO SECTION
+
+Requirements:
+
+- Strong product screenshot
+- Product mockup
+- Interactive dashboard preview
+- Animated background
+- Clear headline
+
+Example Style:
+
+"Master Programming Faster with an AI Tutor That Actually Understands Your Learning Journey"
+
+Primary CTA:
+Start Learning Free
+
+Secondary CTA:
+Watch Demo
+
+---
+
+DASHBOARD PAGE
+
+Sections:
+
+- Welcome Banner
+- Progress Overview
+- Learning Streak
+- Recent Activity
+- Recommended Topics
+- Weak Topics
+- Upcoming Quizzes
+- AI Recommendations
+
+Widgets must feel like:
+
+Linear
+Vercel
+Stripe Dashboard
+
+---
+
+AI TUTOR PAGE
+
+Layout:
+
+Left:
+
+- Conversation History
+
+Center:
+
+- Chat Interface
+
+Right:
+
+- Sources
+- Retrieved Context
+- Recommended Topics
+
+Features:
+
+- Streaming Responses
+- Code Formatting
+- Syntax Highlighting
+- Citation Display
+
+---
+
+QUIZ PAGE
+
+Sections:
+
+- Quiz Categories
+- Difficulty Filters
+- Quiz History
+- Performance Analytics
+
+Must include:
+
+- Progress indicators
+- Timers
+- Achievement system
+
+---
+
+ROADMAP PAGE
+
+Visual Roadmap:
+
+Arrays
+↓
+HashMaps
+↓
+Sliding Window
+↓
+Trees
+↓
+Graphs
+↓
+Dynamic Programming
+
+Interactive node-based visualization.
+
+---
+
+CODE REVIEW PAGE
+
+Layout:
+
+Left:
+Code Editor
+
+Right:
+Review Results
+
+Include:
+
+- Complexity Analysis
+- Suggestions
+- Refactored Code
+- Security Warnings
+
+---
+
+INTERVIEW MODE PAGE
+
+Design:
+
+Real interview simulation.
+
+Include:
+
+- Timer
+- Current Question
+- Notes Area
+- AI Interviewer Panel
+
+---
+
+ANALYTICS PAGE
+
+Charts:
+
+- Learning Progress
+- Skill Growth
+- Topic Mastery
+- Quiz Scores
+- Interview Scores
+
+Use:
+
+- Recharts
+
+---
+
+ADMIN DASHBOARD
+
+Sections:
+
+- User Management
+- Document Management
+- AI Usage Metrics
+- Cost Analytics
+- Security Events
+- System Health
+
+---
+
+DESIGN DELIVERABLES
+
+Before coding:
+
+Generate:
+
+Frontend_Architecture.md
+
+Include:
+
+- Complete page map
+- Component hierarchy
+- State management architecture
+- Route structure
+- Layout system
+- Design tokens
+- Typography system
+- Color system
+- Responsive breakpoints
+
+Generate wireframes in markdown format before implementation.
+
+Do not begin frontend implementation until the UI architecture is approved.
+
+Even Better
+Ask the model to create:
+Plain text
+docs/PROJECT_CONTEXT.md
+This file is the most important file in the project.
+Every future model can simply read:
+Plain text
+PRD.md
+Architecture.md
+PROJECT_CONTEXT.md
+Progress_Log.md
+and immediately know:
+what is finished
+what is pending
+where to continue.
+
+Going Forward (Very Important)
+At the end of EVERY phase, force the AI to update:
+Plain text
+docs/PROJECT_CONTEXT.md
+docs/Progress_Log.md
+Example:
+Markdown
+# Current Phase
+
+Phase 3
+
+# Completed
+
+✅ Authentication
+✅ JWT
+✅ RBAC
+
+# Pending
+
+⬜ PostgreSQL Models
+⬜ Alembic Migrations
+
+# Next Phase
+
+Phase 4 - Document Ingestion
+Then even if:
+Codex limit is reached
+Antigravity limit is reached
+You switch accounts
+You switch models
+you simply paste:
+Plain text
+Read docs/PROJECT_CONTEXT.md
+
+Continue from the next pending phase.
+
+Do not modify previous architecture decisions.
+and the new model can continue almost seamlessly.
+
+
+
+for background or wallpaper and for login sign up or for landing page use this  :
+
+Prompt:
+Build a modern React landing page using Vite, Tailwind CSS, and motion/react for elegant animations. The application must feature a highly polished, aesthetic hero section and a glassmorphic navigation bar.
+1. Typography & Global CSS (src/index.css)
+Import the fonts "Inter" and "Outfit" from Google Fonts.
+Set --font-sans to Inter and --font-display to Outfit.
+Set --color-brand-green to #9fff00 and --color-bg-base strictly to #EDEEF5.
+Ensure the body uses @apply bg-bg-base text-zinc-900 font-sans antialiased; to carry the #EDEEF5 background throughout the entire page.
+2. Component Structure (src/App.tsx)
+Import Navbar and Hero.
+Return a div containing the <Navbar /> and <main><Hero /></main>.
+Set the wrapper container classes to min-h-screen bg-bg-base selection:bg-brand-green selection:text-black.
+3. Navbar Component (src/components/Navbar.tsx)
+Give it fixed styling: fixed top-0 left-0 w-full z-50 py-6 md:py-10 bg-gradient-to-b from-[#f1f1f1]/80 to-transparent backdrop-blur-[2px].
+Container layout: A 12-column grid (grid-cols-12 max-w-7xl mx-auto).
+Left (Cols 1-3): A geometric flower/clover SVG icon (fill: #1a1a1a) beside the brand name "mėntality" using the display font.
+Center (Cols 4-9): Desktop-only hidden nav links: "service", "patient resources", "about us", "education center". Styled small and lowercase.
+Right (Cols 10-12): "find help" anchor link, a black rounded button reading "get started →", and an elegant animated hamburger toggle icon for mobile.
+Include an AnimatePresence and motion.div drawer that slides down for mobile with the navigation links.
+4. Hero Component (src/components/Hero.tsx)
+Main styling: <section className="relative min-h-[110vh] sm:min-h-[140vh] w-full flex flex-col items-center justify-start overflow-hidden bg-bg-base">
+Background Video Container:
+Absolute wrapper: <div className="absolute top-[15vh] sm:top-[20vh] left-0 w-full h-[95vh] sm:h-[120vh] z-0 pointer-events-none">
+The video itself should be <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-100" />
+Exact CloudFront URL: https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260603_132049_036591b8-6e92-4760-b94c-a7ea6eef315c.mp4
+Gradient Mask: Below the video in the wrapper, add <div className="absolute top-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-b from-bg-base to-transparent"></div> to smoothly blend the video into the #EDEEF5 background.
+Hero Content Alignment: Use <div className="max-w-7xl w-full mx-auto px-8 md:px-16 lg:px-20 relative z-10 grid grid-cols-12 gap-x-4 md:gap-x-8">. Place the text in col-span-12 md:col-span-10 md:col-start-2.
+Hero Header (motion.h1): Needs a slide-up fade (initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}).
+Exact text formatting:
+[#1a1a1a] Remix: Mentality offers
+[#8e8e8e] information
+(line break)
+[#8e8e8e] and resources to help you manage
+(line break)
+[#8e8e8e] your [Eye Icon Puipl UI Element] mental wellbeing.
+For the Eye Icon Element between "your" and "mental", create an inline pill-shaped visual: w-[16px] md:w-[42px] lg:w-[62px] border-[2px] border-[#1a1a1a] rounded-full inline-flex items-center justify-center containing a tiny solid black dot (w-2 h-2).
+Search Pill Component:
+Add a delayed slide-up animation (delay: 0.15) under the header text.
+Make a custom capsule <div className="bg-white rounded-[6px] border border-black/[0.05] p-1 pl-4 flex items-center shadow-sm">.
+Include an <input placeholder="Ask me anything..."> with transparent background so it looks integrated.
+Trailing action button: <button className="bg-[#1a1a1a] text-white w-9 h-9 rounded-full relative"> containing an SVG chevron/arrow icon.
+Architectural Edge Anchors:
+Absolute middle right edge: Create a glassmorphic pill button for language switching (pl — en).
+Absolute bottom left corner: Place "2024" in small neat text.
+Absolute bottom right corner: Place "mental health tools" in small neat text.
+Ensure there are no artificial margins/padding below the video to make sure the video takes exactly 100% of the Hero viewport, while allowing the #EDEEF5 background base to anchor the entire page cleanly.
+
+

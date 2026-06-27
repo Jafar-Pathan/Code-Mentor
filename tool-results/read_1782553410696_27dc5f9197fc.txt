@@ -1,0 +1,1792 @@
+     1→MASTER PROJECT GENERATION PROMPT
+     2→
+     3→You are a Senior AI Engineer, Staff Software Engineer, MLOps Engineer, Security Engineer, Cloud Architect, and Product Architect.
+     4→
+     5→Your task is to build a production-grade AI Tutor for Programming Education using RAG, Agentic AI, LLMs, and modern software engineering best practices.
+     6→
+     7→This project must be portfolio-worthy, industry-grade, scalable, secure, cloud-ready, and demonstrate skills expected from AI Engineers in 2026.
+     8→
+     9→---
+    10→
+    11→IMPORTANT DEVELOPMENT RULES
+    12→
+    13→1. DO NOT generate the entire project at once.
+    14→2. Development MUST happen in phases.
+    15→3. Before starting implementation, generate a detailed implementation roadmap.
+    16→4. At the end of every phase:
+    17→   - Generate updated documentation.
+    18→   - Generate updated PROJECT_CONTEXT.md.
+    19→   - Summarize completed work.
+    20→   - Summarize architecture decisions.
+    21→   - Summarize database changes.
+    22→   - Summarize API changes.
+    23→   - Summarize dependency changes.
+    24→5. After each phase, STOP and wait for user approval before proceeding.
+    25→6. Never automatically continue to the next phase.
+    26→7. Ask:
+    27→
+    28→"Phase X is complete. Review the summary and approve continuation to Phase X+1."
+    29→
+    30→---
+    31→
+    32→PROJECT OBJECTIVE
+    33→
+    34→Build a SaaS platform that functions as an AI Programming Tutor.
+    35→
+    36→The platform must help students learn:
+    37→
+    38→- Data Structures
+    39→- Algorithms
+    40→- Java
+    41→- Python
+    42→- SQL
+    43→- JavaScript
+    44→- System Design
+    45→- Interview Preparation
+    46→- LeetCode
+    47→
+    48→The platform must provide:
+    49→
+    50→- Personalized tutoring
+    51→- AI-powered explanations
+    52→- Quiz generation
+    53→- Code review
+    54→- Interview preparation
+    55→- Progress tracking
+    56→- Adaptive learning
+    57→- GitHub repository analysis
+    58→- RAG-powered educational assistance
+    59→
+    60→---
+    61→
+    62→CORE DIFFERENTIATOR
+    63→
+    64→This must NOT be a simple chatbot.
+    65→
+    66→The system must include:
+    67→
+    68→- Agentic AI
+    69→- RAG
+    70→- Hybrid Search
+    71→- Evaluation Framework
+    72→- Hallucination Detection
+    73→- Learning Analytics
+    74→- Observability
+    75→- Cost Tracking
+    76→- Enterprise Security
+    77→
+    78→---
+    79→
+    80→TECH STACK
+    81→
+    82→Frontend:
+    83→
+    84→- Next.js 15
+    85→- TypeScript
+    86→- Tailwind CSS
+    87→- ShadCN UI
+    88→- Zustand
+    89→- TanStack Query
+    90→
+    91→Backend:
+    92→
+    93→- FastAPI
+    94→- Python 3.12
+    95→
+    96→Dependency Management:
+    97→
+    98→- uv
+    99→- pyproject.toml
+   100→- uv.lock
+   101→
+   102→Database:
+   103→
+   104→- PostgreSQL
+   105→
+   106→Vector Database:
+   107→
+   108→- Qdrant
+   109→
+   110→Caching:
+   111→
+   112→- Redis
+   113→
+   114→Queue:
+   115→
+   116→- Celery
+   117→- Redis Broker
+   118→
+   119→AI Framework:
+   120→
+   121→- LangGraph
+   122→- LangChain
+   123→
+   124→Embeddings:
+   125→
+   126→- BAAI/bge-small-en-v1.5
+   127→
+   128→LLM Support:
+   129→
+   130→- OpenAI
+   131→- Gemini
+   132→- Ollama
+   133→- Local Llama Models
+   134→
+   135→Observability:
+   136→
+   137→- Prometheus
+   138→- Grafana
+   139→- OpenTelemetry
+   140→
+   141→Error Monitoring:
+   142→
+   143→- Sentry
+   144→
+   145→Deployment:
+   146→
+   147→- Docker
+   148→- Docker Compose
+   149→- Kubernetes
+   150→
+   151→CI/CD:
+   152→
+   153→- GitHub Actions
+   154→
+   155→---
+   156→
+   157→DOCUMENTATION REQUIREMENTS
+   158→
+   159→Generate and maintain:
+   160→
+   161→docs/
+   162→
+   163→- PRD.md
+   164→- Architecture.md
+   165→- Database_Schema.md
+   166→- API_Spec.md
+   167→- Security_Architecture.md
+   168→- Deployment_Guide.md
+   169→- Development_Roadmap.md
+   170→- Project_Context.md
+   171→- Progress_Log.md
+   172→
+   173→These documents are the source of truth.
+   174→
+   175→Every phase must update them.
+   176→
+   177→The project must be able to continue from a new AI session using only these documents.
+   178→
+   179→---
+   180→
+   181→PROJECT_CONTEXT REQUIREMENT
+   182→
+   183→At the end of every phase generate:
+   184→
+   185→PROJECT_CONTEXT.md
+   186→
+   187→It must contain:
+   188→
+   189→- Current architecture
+   190→- Folder structure
+   191→- Dependencies
+   192→- APIs
+   193→- Database tables
+   194→- Services
+   195→- Security decisions
+   196→- Deployment decisions
+   197→- Pending work
+   198→- Current phase
+   199→
+   200→The document must allow another AI session to continue development with zero prior chat history.
+   201→
+   202→---
+   203→
+   204→PHASES
+   205→
+   206→Phase 0:
+   207→Planning
+   208→
+   209→Generate:
+   210→
+   211→- PRD
+   212→- Architecture
+   213→- Folder Structure
+   214→- Roadmap
+   215→- Database Design
+   216→- Security Design
+   217→- Agent Architecture
+   218→- RAG Architecture
+   219→
+   220→STOP.
+   221→
+   222→Wait for approval.
+   223→
+   224→---
+   225→
+   226→Phase 1:
+   227→Project Foundation
+   228→
+   229→Generate:
+   230→
+   231→- Repository Structure
+   232→- uv Setup
+   233→- Docker Setup
+   234→- FastAPI Base
+   235→- Next.js Base
+   236→- Environment Configuration
+   237→- Logging Setup
+   238→- Config Management
+   239→
+   240→STOP.
+   241→
+   242→Wait for approval.
+   243→
+   244→---
+   245→
+   246→Phase 2:
+   247→Authentication & User Management
+   248→
+   249→Generate:
+   250→
+   251→- Registration
+   252→- Login
+   253→- Refresh Tokens
+   254→- Password Reset
+   255→- Email Verification
+   256→- RBAC
+   257→
+   258→STOP.
+   259→
+   260→Wait for approval.
+   261→
+   262→---
+   263→
+   264→Phase 3:
+   265→Database Layer
+   266→
+   267→Generate:
+   268→
+   269→- PostgreSQL Schema
+   270→- SQLAlchemy Models
+   271→- Alembic Migrations
+   272→- Repository Pattern
+   273→
+   274→STOP.
+   275→
+   276→Wait for approval.
+   277→
+   278→---
+   279→
+   280→Phase 4:
+   281→Document Ingestion
+   282→
+   283→Generate:
+   284→
+   285→- PDF Parsing
+   286→- DOCX Parsing
+   287→- Markdown Parsing
+   288→- Chunking Pipeline
+   289→- Embedding Pipeline
+   290→- Qdrant Integration
+   291→
+   292→STOP.
+   293→
+   294→Wait for approval.
+   295→
+   296→---
+   297→
+   298→Phase 5:
+   299→RAG Engine
+   300→
+   301→Generate:
+   302→
+   303→- Retrieval Pipeline
+   304→- Hybrid Search
+   305→- BM25
+   306→- Vector Search
+   307→- Metadata Filtering
+   308→- Re-ranking
+   309→- Context Compression
+   310→
+   311→STOP.
+   312→
+   313→Wait for approval.
+   314→
+   315→---
+   316→
+   317→Phase 6:
+   318→Agentic AI
+   319→
+   320→Generate:
+   321→
+   322→- Supervisor Agent
+   323→- Teaching Agent
+   324→- Quiz Agent
+   325→- Roadmap Agent
+   326→- Code Review Agent
+   327→
+   328→STOP.
+   329→
+   330→Wait for approval.
+   331→
+   332→---
+   333→
+   334→Phase 7:
+   335→AI Tutor Features
+   336→
+   337→Generate:
+   338→
+   339→- Tutor Chat
+   340→- Quiz Generation
+   341→- Learning Roadmaps
+   342→- Adaptive Learning
+   343→
+   344→STOP.
+   345→
+   346→Wait for approval.
+   347→
+   348→---
+   349→
+   350→Phase 8:
+   351→Code Review System
+   352→
+   353→Generate:
+   354→
+   355→- Java Review
+   356→- Python Review
+   357→- SQL Review
+   358→- JavaScript Review
+   359→
+   360→STOP.
+   361→
+   362→Wait for approval.
+   363→
+   364→---
+   365→
+   366→Phase 9:
+   367→Interview Preparation
+   368→
+   369→Generate:
+   370→
+   371→- Mock Interviews
+   372→- Coding Interviews
+   373→- Behavioral Interviews
+   374→- Evaluation System
+   375→
+   376→STOP.
+   377→
+   378→Wait for approval.
+   379→
+   380→---
+   381→
+   382→Phase 10:
+   383→GitHub Integration
+   384→
+   385→Generate:
+   386→
+   387→- GitHub OAuth
+   388→- Repository Analysis
+   389→- Skill Gap Detection
+   390→
+   391→STOP.
+   392→
+   393→Wait for approval.
+   394→
+   395→---
+   396→
+   397→Phase 11:
+   398→Analytics
+   399→
+   400→Generate:
+   401→
+   402→- Progress Tracking
+   403→- Learning Analytics
+   404→- Weak Topic Detection
+   405→- Adaptive Difficulty
+   406→
+   407→STOP.
+   408→
+   409→Wait for approval.
+   410→
+   411→---
+   412→
+   413→Phase 12:
+   414→Evaluation & AI Safety
+   415→
+   416→Generate:
+   417→
+   418→- RAGAS
+   419→- DeepEval
+   420→- Hallucination Detection
+   421→- Prompt Injection Detection
+   422→- Jailbreak Detection
+   423→- Toxicity Detection
+   424→
+   425→STOP.
+   426→
+   427→Wait for approval.
+   428→
+   429→---
+   430→
+   431→Phase 13:
+   432→Observability
+   433→
+   434→Generate:
+   435→
+   436→- Prometheus
+   437→- Grafana
+   438→- OpenTelemetry
+   439→- Sentry
+   440→
+   441→STOP.
+   442→
+   443→Wait for approval.
+   444→
+   445→---
+   446→
+   447→Phase 14:
+   448→Deployment
+   449→
+   450→Generate:
+   451→
+   452→- Docker Compose
+   453→- Kubernetes
+   454→- CI/CD
+   455→- Monitoring Setup
+   456→
+   457→STOP.
+   458→
+   459→Wait for approval.
+   460→
+   461→---
+   462→
+   463→RAG REQUIREMENTS
+   464→
+   465→Implement:
+   466→
+   467→- Semantic Chunking
+   468→- Hybrid Search
+   469→- BM25
+   470→- Dense Retrieval
+   471→- Metadata Filtering
+   472→- Parent Child Retrieval
+   473→- Query Rewriting
+   474→- Re-ranking
+   475→- Context Compression
+   476→- Retrieval Caching
+   477→
+   478→---
+   479→
+   480→AGENT REQUIREMENTS
+   481→
+   482→Implement LangGraph.
+   483→
+   484→Agents:
+   485→
+   486→Supervisor Agent
+   487→
+   488→Teaching Agent
+   489→
+   490→Quiz Agent
+   491→
+   492→Roadmap Agent
+   493→
+   494→Code Review Agent
+   495→
+   496→Interview Agent
+   497→
+   498→Analytics Agent
+   499→
+   500→Use proper state management.
+   501→
+   502→---
+   503→
+   504→CODE REVIEW FEATURES
+   505→
+   506→Support:
+   507→
+   508→- Java
+   509→- Python
+   510→- SQL
+   511→- JavaScript
+   512→
+   513→Review:
+   514→
+   515→- Bugs
+   516→- Complexity
+   517→- Readability
+   518→- Security
+   519→- Optimization
+   520→
+   521→Generate:
+   522→
+   523→- Suggestions
+   524→- Complexity Analysis
+   525→- Refactored Code
+   526→
+   527→---
+   528→
+   529→GITHUB INTEGRATION
+   530→
+   531→Analyze repositories.
+   532→
+   533→Detect:
+   534→
+   535→- Strong Skills
+   536→- Weak Skills
+   537→- Missing Topics
+   538→
+   539→Generate learning plans.
+   540→
+   541→---
+   542→
+   543→PERFORMANCE REQUIREMENTS
+   544→
+   545→Frontend:
+   546→
+   547→- Debouncing
+   548→- Throttling
+   549→- Lazy Loading
+   550→- Code Splitting
+   551→- Virtualization
+   552→- Request Cancellation
+   553→- React Memoization
+   554→
+   555→Backend:
+   556→
+   557→- Async APIs
+   558→- Connection Pooling
+   559→- Query Optimization
+   560→- Redis Caching
+   561→- Response Compression
+   562→- Background Jobs
+   563→
+   564→---
+   565→
+   566→SECURITY REQUIREMENTS
+   567→
+   568→Implement:
+   569→
+   570→- JWT Authentication
+   571→- Refresh Token Rotation
+   572→- RBAC
+   573→- API Rate Limiting
+   574→- User Throttling
+   575→- IP Throttling
+   576→- Brute Force Protection
+   577→- CSRF Protection
+   578→- XSS Protection
+   579→- Input Validation
+   580→- Output Validation
+   581→- Secret Management
+   582→- Audit Logging
+   583→- Secure Password Hashing
+   584→- OWASP Top 10 Compliance
+   585→
+   586→Never store secrets in source code.
+   587→
+   588→---
+   589→
+   590→AI SAFETY REQUIREMENTS
+   591→
+   592→Implement:
+   593→
+   594→- Prompt Injection Detection
+   595→- Jailbreak Detection
+   596→- Hallucination Detection
+   597→- Toxicity Detection
+   598→- Output Verification
+   599→- Source Attribution
+   600→
+   601→---
+   602→
+   603→COST OPTIMIZATION
+   604→
+   605→Implement:
+   606→
+   607→- Prompt Caching
+   608→- Semantic Cache
+   609→- Redis Cache
+   610→- Token Tracking
+   611→- Cost Tracking
+   612→- Dynamic Model Routing
+   613→
+   614→Simple Queries:
+   615→
+   616→- Small Models
+   617→
+   618→Complex Queries:
+   619→
+   620→- Large Models
+   621→
+   622→---
+   623→
+   624→OBSERVABILITY
+   625→
+   626→Track:
+   627→
+   628→- API Latency
+   629→- Retrieval Latency
+   630→- LLM Latency
+   631→- Token Usage
+   632→- Cost Per Request
+   633→- Cache Hit Ratio
+   634→- User Activity
+   635→
+   636→Generate Grafana Dashboards.
+   637→
+   638→---
+   639→
+   640→TESTING
+   641→
+   642→Generate:
+   643→
+   644→- Unit Tests
+   645→- Integration Tests
+   646→- API Tests
+   647→- Agent Tests
+   648→- RAG Tests
+   649→
+   650→Minimum Coverage:
+   651→
+   652→85%
+   653→
+   654→---
+   655→
+   656→QUALITY REQUIREMENTS
+   657→
+   658→Follow:
+   659→
+   660→- Clean Architecture
+   661→- SOLID Principles
+   662→- Dependency Injection
+   663→- Repository Pattern
+   664→- Service Layer Pattern
+   665→- Async First Design
+   666→
+   667→No placeholder implementations.
+   668→No TODO comments.
+   669→No mock business logic.
+   670→
+   671→Every generated component must be production-ready.
+   672→
+   673→---
+   674→
+   675→STARTING INSTRUCTION
+   676→
+   677→Begin with Phase 0 only.
+   678→
+   679→Generate:
+   680→
+   681→1. Product Requirements Document
+   682→2. High-Level Architecture
+   683→3. Database Architecture
+   684→4. Security Architecture
+   685→5. Agent Architecture
+   686→6. RAG Architecture
+   687→7. Folder Structure
+   688→8. Development Roadmap
+   689→9. Documentation Strategy
+   690→10. Initial PROJECT_CONTEXT.md
+   691→
+   692→Do not generate implementation code yet.
+   693→
+   694→After Phase 0 is complete, stop and wait for approval before continuing.
+   695→
+   696→
+   697→Architecture Deliverables (Mandatory)
+   698→During Phase 0 generate detailed documentation for:
+   699→1. Repository Structure
+   700→Explain every directory and file.
+   701→Example:
+   702→Plain text
+   703→ai-tutor/
+   704→
+   705→docs/
+   706→frontend/
+   707→backend/
+   708→infrastructure/
+   709→monitoring/
+   710→scripts/
+   711→tests/
+   712→For every folder explain:
+   713→Purpose
+   714→Responsibilities
+   715→Dependencies
+   716→2. Frontend Architecture
+   717→Generate complete page map.
+   718→Pages:
+   719→Plain text
+   720→/
+   721→├── Landing Page
+   722→├── Login
+   723→├── Register
+   724→├── Dashboard
+   725→├── AI Tutor
+   726→├── Learning Roadmap
+   727→├── Quiz Center
+   728→├── Code Review
+   729→├── Interview Mode
+   730→├── Analytics
+   731→├── Profile
+   732→└── Admin
+   733→For each page provide:
+   734→Purpose
+   735→Features
+   736→APIs used
+   737→Components used
+   738→3. Component Architecture
+   739→Generate:
+   740→Plain text
+   741→components/
+   742→
+   743→common/
+   744→layout/
+   745→auth/
+   746→chat/
+   747→quiz/
+   748→roadmap/
+   749→analytics/
+   750→interview/
+   751→code-review/
+   752→admin/
+   753→Explain every component group.
+   754→4. Backend Architecture
+   755→Generate complete module breakdown.
+   756→Plain text
+   757→backend/
+   758→
+   759→api/
+   760→core/
+   761→services/
+   762→repositories/
+   763→models/
+   764→agents/
+   765→rag/
+   766→security/
+   767→analytics/
+   768→workers/
+   769→Explain:
+   770→Responsibility
+   771→Dependencies
+   772→Interfaces
+   773→5. Database Architecture
+   774→Generate:
+   775→ER Diagram
+   776→Table Relationships
+   777→Foreign Keys
+   778→Index Strategy
+   779→Partitioning Strategy
+   780→6. API Architecture
+   781→Generate all endpoints.
+   782→Example:
+   783→Plain text
+   784→/api/v1/auth
+   785→/api/v1/users
+   786→/api/v1/chat
+   787→/api/v1/quiz
+   788→/api/v1/roadmap
+   789→/api/v1/interview
+   790→/api/v1/admin
+   791→For every endpoint explain:
+   792→Request
+   793→Response
+   794→Authentication
+   795→Rate Limits
+   796→7. Agent Architecture
+   797→Generate:
+   798→Plain text
+   799→Supervisor Agent
+   800→├── Tutor Agent
+   801→├── Quiz Agent
+   802→├── Roadmap Agent
+   803→├── Interview Agent
+   804→├── Code Review Agent
+   805→└── Analytics Agent
+   806→Explain:
+   807→State Flow
+   808→Communication
+   809→Memory
+   810→Failure Handling
+   811→8. RAG Architecture
+   812→Generate:
+   813→Plain text
+   814→Upload
+   815→ ↓
+   816→Parser
+   817→ ↓
+   818→Chunker
+   819→ ↓
+   820→Embedding
+   821→ ↓
+   822→Qdrant
+   823→ ↓
+   824→Retriever
+   825→ ↓
+   826→Reranker
+   827→ ↓
+   828→LLM
+   829→Explain every step.
+   830→9. Deployment Architecture
+   831→Generate:
+   832→Plain text
+   833→User
+   834→ ↓
+   835→Cloudflare
+   836→ ↓
+   837→Frontend
+   838→ ↓
+   839→API Gateway
+   840→ ↓
+   841→FastAPI
+   842→ ↓
+   843→Redis
+   844→ ↓
+   845→PostgreSQL
+   846→ ↓
+   847→Qdrant
+   848→Include:
+   849→Scaling strategy
+   850→Load balancing
+   851→Backup strategy
+   852→10. Security Architecture
+   853→Generate threat model.
+   854→Cover:
+   855→Authentication
+   856→Authorization
+   857→Secrets
+   858→Prompt Injection
+   859→RAG Security
+   860→API Security
+   861→Database Security
+   862→11. Documentation Architecture
+   863→Generate and maintain:
+   864→
+   865→docs/
+   866→
+   867→PRD.md
+   868→Architecture.md
+   869→Frontend_Architecture.md
+   870→Backend_Architecture.md
+   871→Database_Schema.md
+   872→Security_Architecture.md
+   873→API_Spec.md
+   874→Deployment_Guide.md
+   875→Project_Context.md
+   876→Progress_Log.md
+   877→
+   878→Every phase must update these documents.
+   879→
+   880→UI/UX DESIGN SYSTEM REQUIREMENTS
+   881→
+   882→The application must follow a premium AI SaaS design language inspired by MotionSites, Linear, Vercel, Stripe, Notion, Perplexity and modern high-converting SaaS products.
+   883→
+   884→Do not generate generic AI startup designs.
+   885→
+   886→---
+   887→
+   888→DESIGN PRINCIPLES
+   889→
+   890→Prioritize:
+   891→
+   892→- Clarity over decoration
+   893→- Product-first design
+   894→- Strong visual hierarchy
+   895→- Fast loading
+   896→- Accessibility
+   897→- Mobile-first responsiveness
+   898→
+   899→Avoid:
+   900→
+   901→- Random gradients
+   902→- Excessive glassmorphism
+   903→- Overused AI startup templates
+   904→- Animation overload
+   905→- Multiple competing CTAs
+   906→
+   907→---
+   908→
+   909→DESIGN SYSTEM
+   910→
+   911→Theme:
+   912→
+   913→Dark-first
+   914→
+   915→Color Palette:
+   916→
+   917→- Background: Near-black
+   918→- Surface: Elevated dark cards
+   919→- Accent: Electric blue / cyan
+   920→- Success: Green
+   921→- Warning: Amber
+   922→- Error: Red
+   923→
+   924→Typography:
+   925→
+   926→- Inter
+   927→- Geist
+   928→- Plus Jakarta Sans
+   929→
+   930→Spacing:
+   931→
+   932→8px design system
+   933→
+   934→Border Radius:
+   935→
+   936→Consistent modern SaaS radius
+   937→
+   938→Icons:
+   939→
+   940→Lucide React
+   941→
+   942→---
+   943→
+   944→LANDING PAGE
+   945→
+   946→The landing page must look like a funded AI startup.
+   947→
+   948→Sections:
+   949→
+   950→1. Navigation
+   951→2. Hero
+   952→3. Product Demo
+   953→4. Problem Statement
+   954→5. Solution Overview
+   955→6. Features
+   956→7. AI Agent Workflow Visualization
+   957→8. Personalized Learning Demo
+   958→9. Code Review Demo
+   959→10. Interview Mode Demo
+   960→11. Analytics Dashboard Preview
+   961→12. Testimonials
+   962→13. FAQ
+   963→14. Pricing
+   964→15. Final CTA
+   965→16. Footer
+   966→
+   967→---
+   968→
+   969→HERO SECTION
+   970→
+   971→Requirements:
+   972→
+   973→- Strong product screenshot
+   974→- Product mockup
+   975→- Interactive dashboard preview
+   976→- Animated background
+   977→- Clear headline
+   978→
+   979→Example Style:
+   980→
+   981→"Master Programming Faster with an AI Tutor That Actually Understands Your Learning Journey"
+   982→
+   983→Primary CTA:
+   984→Start Learning Free
+   985→
+   986→Secondary CTA:
+   987→Watch Demo
+   988→
+   989→---
+   990→
+   991→DASHBOARD PAGE
+   992→
+   993→Sections:
+   994→
+   995→- Welcome Banner
+   996→- Progress Overview
+   997→- Learning Streak
+   998→- Recent Activity
+   999→- Recommended Topics
+  1000→- Weak Topics
+  1001→- Upcoming Quizzes
+  1002→- AI Recommendations
+  1003→
+  1004→Widgets must feel like:
+  1005→
+  1006→Linear
+  1007→Vercel
+  1008→Stripe Dashboard
+  1009→
+  1010→---
+  1011→
+  1012→AI TUTOR PAGE
+  1013→
+  1014→Layout:
+  1015→
+  1016→Left:
+  1017→
+  1018→- Conversation History
+  1019→
+  1020→Center:
+  1021→
+  1022→- Chat Interface
+  1023→
+  1024→Right:
+  1025→
+  1026→- Sources
+  1027→- Retrieved Context
+  1028→- Recommended Topics
+  1029→
+  1030→Features:
+  1031→
+  1032→- Streaming Responses
+  1033→- Code Formatting
+  1034→- Syntax Highlighting
+  1035→- Citation Display
+  1036→
+  1037→---
+  1038→
+  1039→QUIZ PAGE
+  1040→
+  1041→Sections:
+  1042→
+  1043→- Quiz Categories
+  1044→- Difficulty Filters
+  1045→- Quiz History
+  1046→- Performance Analytics
+  1047→
+  1048→Must include:
+  1049→
+  1050→- Progress indicators
+  1051→- Timers
+  1052→- Achievement system
+  1053→
+  1054→---
+  1055→
+  1056→ROADMAP PAGE
+  1057→
+  1058→Visual Roadmap:
+  1059→
+  1060→Arrays
+  1061→↓
+  1062→HashMaps
+  1063→↓
+  1064→Sliding Window
+  1065→↓
+  1066→Trees
+  1067→↓
+  1068→Graphs
+  1069→↓
+  1070→Dynamic Programming
+  1071→
+  1072→Interactive node-based visualization.
+  1073→
+  1074→---
+  1075→
+  1076→CODE REVIEW PAGE
+  1077→
+  1078→Layout:
+  1079→
+  1080→Left:
+  1081→Code Editor
+  1082→
+  1083→Right:
+  1084→Review Results
+  1085→
+  1086→Include:
+  1087→
+  1088→- Complexity Analysis
+  1089→- Suggestions
+  1090→- Refactored Code
+  1091→- Security Warnings
+  1092→
+  1093→---
+  1094→
+  1095→INTERVIEW MODE PAGE
+  1096→
+  1097→Design:
+  1098→
+  1099→Real interview simulation.
+  1100→
+  1101→Include:
+  1102→
+  1103→- Timer
+  1104→- Current Question
+  1105→- Notes Area
+  1106→- AI Interviewer Panel
+  1107→
+  1108→---
+  1109→
+  1110→ANALYTICS PAGE
+  1111→
+  1112→Charts:
+  1113→
+  1114→- Learning Progress
+  1115→- Skill Growth
+  1116→- Topic Mastery
+  1117→- Quiz Scores
+  1118→- Interview Scores
+  1119→
+  1120→Use:
+  1121→
+  1122→- Recharts
+  1123→
+  1124→---
+  1125→
+  1126→ADMIN DASHBOARD
+  1127→
+  1128→Sections:
+  1129→
+  1130→- User Management
+  1131→- Document Management
+  1132→- AI Usage Metrics
+  1133→- Cost Analytics
+  1134→- Security Events
+  1135→- System Health
+  1136→
+  1137→---
+  1138→
+  1139→DESIGN DELIVERABLES
+  1140→
+  1141→Before coding:
+  1142→
+  1143→Generate:
+  1144→
+  1145→Frontend_Architecture.md
+  1146→
+  1147→Include:
+  1148→
+  1149→- Complete page map
+  1150→- Component hierarchy
+  1151→- State management architecture
+  1152→- Route structure
+  1153→- Layout system
+  1154→- Design tokens
+  1155→- Typography system
+  1156→- Color system
+  1157→- Responsive breakpoints
+  1158→
+  1159→Generate wireframes in markdown format before implementation.
+  1160→
+  1161→Do not begin frontend implementation until the UI architecture is approved.
+  1162→
+  1163→Even Better
+  1164→Ask the model to create:
+  1165→Plain text
+  1166→docs/PROJECT_CONTEXT.md
+  1167→This file is the most important file in the project.
+  1168→Every future model can simply read:
+  1169→Plain text
+  1170→PRD.md
+  1171→Architecture.md
+  1172→PROJECT_CONTEXT.md
+  1173→Progress_Log.md
+  1174→and immediately know:
+  1175→what is finished
+  1176→what is pending
+  1177→where to continue.
+  1178→
+  1179→Going Forward (Very Important)
+  1180→At the end of EVERY phase, force the AI to update:
+  1181→Plain text
+  1182→docs/PROJECT_CONTEXT.md
+  1183→docs/Progress_Log.md
+  1184→Example:
+  1185→Markdown
+  1186→# Current Phase
+  1187→
+  1188→Phase 3
+  1189→
+  1190→# Completed
+  1191→
+  1192→✅ Authentication
+  1193→✅ JWT
+  1194→✅ RBAC
+  1195→
+  1196→# Pending
+  1197→
+  1198→⬜ PostgreSQL Models
+  1199→⬜ Alembic Migrations
+  1200→
+  1201→# Next Phase
+  1202→
+  1203→Phase 4 - Document Ingestion
+  1204→Then even if:
+  1205→Codex limit is reached
+  1206→Antigravity limit is reached
+  1207→You switch accounts
+  1208→You switch models
+  1209→you simply paste:
+  1210→Plain text
+  1211→Read docs/PROJECT_CONTEXT.md
+  1212→
+  1213→Continue from the next pending phase.
+  1214→
+  1215→Do not modify previous architecture decisions.
+  1216→and the new model can continue almost seamlessly.
+  1217→
+  1218→
+  1219→
+  1220→Architecture Deliverables (Mandatory)
+  1221→During Phase 0 generate detailed documentation for:
+  1222→1. Repository Structure
+  1223→Explain every directory and file.
+  1224→Example:
+  1225→Plain text
+  1226→ai-tutor/
+  1227→
+  1228→docs/
+  1229→frontend/
+  1230→backend/
+  1231→infrastructure/
+  1232→monitoring/
+  1233→scripts/
+  1234→tests/
+  1235→For every folder explain:
+  1236→Purpose
+  1237→Responsibilities
+  1238→Dependencies
+  1239→2. Frontend Architecture
+  1240→Generate complete page map.
+  1241→Pages:
+  1242→Plain text
+  1243→/
+  1244→├── Landing Page
+  1245→├── Login
+  1246→├── Register
+  1247→├── Dashboard
+  1248→├── AI Tutor
+  1249→├── Learning Roadmap
+  1250→├── Quiz Center
+  1251→├── Code Review
+  1252→├── Interview Mode
+  1253→├── Analytics
+  1254→├── Profile
+  1255→└── Admin
+  1256→For each page provide:
+  1257→Purpose
+  1258→Features
+  1259→APIs used
+  1260→Components used
+  1261→3. Component Architecture
+  1262→Generate:
+  1263→Plain text
+  1264→components/
+  1265→
+  1266→common/
+  1267→layout/
+  1268→auth/
+  1269→chat/
+  1270→quiz/
+  1271→roadmap/
+  1272→analytics/
+  1273→interview/
+  1274→code-review/
+  1275→admin/
+  1276→Explain every component group.
+  1277→4. Backend Architecture
+  1278→Generate complete module breakdown.
+  1279→Plain text
+  1280→backend/
+  1281→
+  1282→api/
+  1283→core/
+  1284→services/
+  1285→repositories/
+  1286→models/
+  1287→agents/
+  1288→rag/
+  1289→security/
+  1290→analytics/
+  1291→workers/
+  1292→Explain:
+  1293→Responsibility
+  1294→Dependencies
+  1295→Interfaces
+  1296→5. Database Architecture
+  1297→Generate:
+  1298→ER Diagram
+  1299→Table Relationships
+  1300→Foreign Keys
+  1301→Index Strategy
+  1302→Partitioning Strategy
+  1303→6. API Architecture
+  1304→Generate all endpoints.
+  1305→Example:
+  1306→Plain text
+  1307→/api/v1/auth
+  1308→/api/v1/users
+  1309→/api/v1/chat
+  1310→/api/v1/quiz
+  1311→/api/v1/roadmap
+  1312→/api/v1/interview
+  1313→/api/v1/admin
+  1314→For every endpoint explain:
+  1315→Request
+  1316→Response
+  1317→Authentication
+  1318→Rate Limits
+  1319→7. Agent Architecture
+  1320→Generate:
+  1321→Plain text
+  1322→Supervisor Agent
+  1323→├── Tutor Agent
+  1324→├── Quiz Agent
+  1325→├── Roadmap Agent
+  1326→├── Interview Agent
+  1327→├── Code Review Agent
+  1328→└── Analytics Agent
+  1329→Explain:
+  1330→State Flow
+  1331→Communication
+  1332→Memory
+  1333→Failure Handling
+  1334→8. RAG Architecture
+  1335→Generate:
+  1336→Plain text
+  1337→Upload
+  1338→ ↓
+  1339→Parser
+  1340→ ↓
+  1341→Chunker
+  1342→ ↓
+  1343→Embedding
+  1344→ ↓
+  1345→Qdrant
+  1346→ ↓
+  1347→Retriever
+  1348→ ↓
+  1349→Reranker
+  1350→ ↓
+  1351→LLM
+  1352→Explain every step.
+  1353→9. Deployment Architecture
+  1354→Generate:
+  1355→Plain text
+  1356→User
+  1357→ ↓
+  1358→Cloudflare
+  1359→ ↓
+  1360→Frontend
+  1361→ ↓
+  1362→API Gateway
+  1363→ ↓
+  1364→FastAPI
+  1365→ ↓
+  1366→Redis
+  1367→ ↓
+  1368→PostgreSQL
+  1369→ ↓
+  1370→Qdrant
+  1371→Include:
+  1372→Scaling strategy
+  1373→Load balancing
+  1374→Backup strategy
+  1375→10. Security Architecture
+  1376→Generate threat model.
+  1377→Cover:
+  1378→Authentication
+  1379→Authorization
+  1380→Secrets
+  1381→Prompt Injection
+  1382→RAG Security
+  1383→API Security
+  1384→Database Security
+  1385→11. Documentation Architecture
+  1386→Generate and maintain:
+  1387→
+  1388→docs/
+  1389→
+  1390→PRD.md
+  1391→Architecture.md
+  1392→Frontend_Architecture.md
+  1393→Backend_Architecture.md
+  1394→Database_Schema.md
+  1395→Security_Architecture.md
+  1396→API_Spec.md
+  1397→Deployment_Guide.md
+  1398→Project_Context.md
+  1399→Progress_Log.md
+  1400→
+  1401→Every phase must update these documents.
+  1402→
+  1403→UI/UX DESIGN SYSTEM REQUIREMENTS
+  1404→
+  1405→The application must follow a premium AI SaaS design language inspired by MotionSites, Linear, Vercel, Stripe, Notion, Perplexity and modern high-converting SaaS products.
+  1406→
+  1407→Do not generate generic AI startup designs.
+  1408→
+  1409→---
+  1410→
+  1411→DESIGN PRINCIPLES
+  1412→
+  1413→Prioritize:
+  1414→
+  1415→- Clarity over decoration
+  1416→- Product-first design
+  1417→- Strong visual hierarchy
+  1418→- Fast loading
+  1419→- Accessibility
+  1420→- Mobile-first responsiveness
+  1421→
+  1422→Avoid:
+  1423→
+  1424→- Random gradients
+  1425→- Excessive glassmorphism
+  1426→- Overused AI startup templates
+  1427→- Animation overload
+  1428→- Multiple competing CTAs
+  1429→
+  1430→---
+  1431→
+  1432→DESIGN SYSTEM
+  1433→
+  1434→Theme:
+  1435→
+  1436→Dark-first
+  1437→
+  1438→Color Palette:
+  1439→
+  1440→- Background: Near-black
+  1441→- Surface: Elevated dark cards
+  1442→- Accent: Electric blue / cyan
+  1443→- Success: Green
+  1444→- Warning: Amber
+  1445→- Error: Red
+  1446→
+  1447→Typography:
+  1448→
+  1449→- Inter
+  1450→- Geist
+  1451→- Plus Jakarta Sans
+  1452→
+  1453→Spacing:
+  1454→
+  1455→8px design system
+  1456→
+  1457→Border Radius:
+  1458→
+  1459→Consistent modern SaaS radius
+  1460→
+  1461→Icons:
+  1462→
+  1463→Lucide React
+  1464→
+  1465→---
+  1466→
+  1467→LANDING PAGE
+  1468→
+  1469→The landing page must look like a funded AI startup.
+  1470→
+  1471→Sections:
+  1472→
+  1473→1. Navigation
+  1474→2. Hero
+  1475→3. Product Demo
+  1476→4. Problem Statement
+  1477→5. Solution Overview
+  1478→6. Features
+  1479→7. AI Agent Workflow Visualization
+  1480→8. Personalized Learning Demo
+  1481→9. Code Review Demo
+  1482→10. Interview Mode Demo
+  1483→11. Analytics Dashboard Preview
+  1484→12. Testimonials
+  1485→13. FAQ
+  1486→14. Pricing
+  1487→15. Final CTA
+  1488→16. Footer
+  1489→
+  1490→---
+  1491→
+  1492→HERO SECTION
+  1493→
+  1494→Requirements:
+  1495→
+  1496→- Strong product screenshot
+  1497→- Product mockup
+  1498→- Interactive dashboard preview
+  1499→- Animated background
+  1500→- Clear headline
+  1501→
+  1502→Example Style:
+  1503→
+  1504→"Master Programming Faster with an AI Tutor That Actually Understands Your Learning Journey"
+  1505→
+  1506→Primary CTA:
+  1507→Start Learning Free
+  1508→
+  1509→Secondary CTA:
+  1510→Watch Demo
+  1511→
+  1512→---
+  1513→
+  1514→DASHBOARD PAGE
+  1515→
+  1516→Sections:
+  1517→
+  1518→- Welcome Banner
+  1519→- Progress Overview
+  1520→- Learning Streak
+  1521→- Recent Activity
+  1522→- Recommended Topics
+  1523→- Weak Topics
+  1524→- Upcoming Quizzes
+  1525→- AI Recommendations
+  1526→
+  1527→Widgets must feel like:
+  1528→
+  1529→Linear
+  1530→Vercel
+  1531→Stripe Dashboard
+  1532→
+  1533→---
+  1534→
+  1535→AI TUTOR PAGE
+  1536→
+  1537→Layout:
+  1538→
+  1539→Left:
+  1540→
+  1541→- Conversation History
+  1542→
+  1543→Center:
+  1544→
+  1545→- Chat Interface
+  1546→
+  1547→Right:
+  1548→
+  1549→- Sources
+  1550→- Retrieved Context
+  1551→- Recommended Topics
+  1552→
+  1553→Features:
+  1554→
+  1555→- Streaming Responses
+  1556→- Code Formatting
+  1557→- Syntax Highlighting
+  1558→- Citation Display
+  1559→
+  1560→---
+  1561→
+  1562→QUIZ PAGE
+  1563→
+  1564→Sections:
+  1565→
+  1566→- Quiz Categories
+  1567→- Difficulty Filters
+  1568→- Quiz History
+  1569→- Performance Analytics
+  1570→
+  1571→Must include:
+  1572→
+  1573→- Progress indicators
+  1574→- Timers
+  1575→- Achievement system
+  1576→
+  1577→---
+  1578→
+  1579→ROADMAP PAGE
+  1580→
+  1581→Visual Roadmap:
+  1582→
+  1583→Arrays
+  1584→↓
+  1585→HashMaps
+  1586→↓
+  1587→Sliding Window
+  1588→↓
+  1589→Trees
+  1590→↓
+  1591→Graphs
+  1592→↓
+  1593→Dynamic Programming
+  1594→
+  1595→Interactive node-based visualization.
+  1596→
+  1597→---
+  1598→
+  1599→CODE REVIEW PAGE
+  1600→
+  1601→Layout:
+  1602→
+  1603→Left:
+  1604→Code Editor
+  1605→
+  1606→Right:
+  1607→Review Results
+  1608→
+  1609→Include:
+  1610→
+  1611→- Complexity Analysis
+  1612→- Suggestions
+  1613→- Refactored Code
+  1614→- Security Warnings
+  1615→
+  1616→---
+  1617→
+  1618→INTERVIEW MODE PAGE
+  1619→
+  1620→Design:
+  1621→
+  1622→Real interview simulation.
+  1623→
+  1624→Include:
+  1625→
+  1626→- Timer
+  1627→- Current Question
+  1628→- Notes Area
+  1629→- AI Interviewer Panel
+  1630→
+  1631→---
+  1632→
+  1633→ANALYTICS PAGE
+  1634→
+  1635→Charts:
+  1636→
+  1637→- Learning Progress
+  1638→- Skill Growth
+  1639→- Topic Mastery
+  1640→- Quiz Scores
+  1641→- Interview Scores
+  1642→
+  1643→Use:
+  1644→
+  1645→- Recharts
+  1646→
+  1647→---
+  1648→
+  1649→ADMIN DASHBOARD
+  1650→
+  1651→Sections:
+  1652→
+  1653→- User Management
+  1654→- Document Management
+  1655→- AI Usage Metrics
+  1656→- Cost Analytics
+  1657→- Security Events
+  1658→- System Health
+  1659→
+  1660→---
+  1661→
+  1662→DESIGN DELIVERABLES
+  1663→
+  1664→Before coding:
+  1665→
+  1666→Generate:
+  1667→
+  1668→Frontend_Architecture.md
+  1669→
+  1670→Include:
+  1671→
+  1672→- Complete page map
+  1673→- Component hierarchy
+  1674→- State management architecture
+  1675→- Route structure
+  1676→- Layout system
+  1677→- Design tokens
+  1678→- Typography system
+  1679→- Color system
+  1680→- Responsive breakpoints
+  1681→
+  1682→Generate wireframes in markdown format before implementation.
+  1683→
+  1684→Do not begin frontend implementation until the UI architecture is approved.
+  1685→
+  1686→Even Better
+  1687→Ask the model to create:
+  1688→Plain text
+  1689→docs/PROJECT_CONTEXT.md
+  1690→This file is the most important file in the project.
+  1691→Every future model can simply read:
+  1692→Plain text
+  1693→PRD.md
+  1694→Architecture.md
+  1695→PROJECT_CONTEXT.md
+  1696→Progress_Log.md
+  1697→and immediately know:
+  1698→what is finished
+  1699→what is pending
+  1700→where to continue.
+  1701→
+  1702→Going Forward (Very Important)
+  1703→At the end of EVERY phase, force the AI to update:
+  1704→Plain text
+  1705→docs/PROJECT_CONTEXT.md
+  1706→docs/Progress_Log.md
+  1707→Example:
+  1708→Markdown
+  1709→# Current Phase
+  1710→
+  1711→Phase 3
+  1712→
+  1713→# Completed
+  1714→
+  1715→✅ Authentication
+  1716→✅ JWT
+  1717→✅ RBAC
+  1718→
+  1719→# Pending
+  1720→
+  1721→⬜ PostgreSQL Models
+  1722→⬜ Alembic Migrations
+  1723→
+  1724→# Next Phase
+  1725→
+  1726→Phase 4 - Document Ingestion
+  1727→Then even if:
+  1728→Codex limit is reached
+  1729→Antigravity limit is reached
+  1730→You switch accounts
+  1731→You switch models
+  1732→you simply paste:
+  1733→Plain text
+  1734→Read docs/PROJECT_CONTEXT.md
+  1735→
+  1736→Continue from the next pending phase.
+  1737→
+  1738→Do not modify previous architecture decisions.
+  1739→and the new model can continue almost seamlessly.
+  1740→
+  1741→
+  1742→
+  1743→for background or wallpaper and for login sign up or for landing page use this  :
+  1744→
+  1745→Prompt:
+  1746→Build a modern React landing page using Vite, Tailwind CSS, and motion/react for elegant animations. The application must feature a highly polished, aesthetic hero section and a glassmorphic navigation bar.
+  1747→1. Typography & Global CSS (src/index.css)
+  1748→Import the fonts "Inter" and "Outfit" from Google Fonts.
+  1749→Set --font-sans to Inter and --font-display to Outfit.
+  1750→Set --color-brand-green to #9fff00 and --color-bg-base strictly to #EDEEF5.
+  1751→Ensure the body uses @apply bg-bg-base text-zinc-900 font-sans antialiased; to carry the #EDEEF5 background throughout the entire page.
+  1752→2. Component Structure (src/App.tsx)
+  1753→Import Navbar and Hero.
+  1754→Return a div containing the <Navbar /> and <main><Hero /></main>.
+  1755→Set the wrapper container classes to min-h-screen bg-bg-base selection:bg-brand-green selection:text-black.
+  1756→3. Navbar Component (src/components/Navbar.tsx)
+  1757→Give it fixed styling: fixed top-0 left-0 w-full z-50 py-6 md:py-10 bg-gradient-to-b from-[#f1f1f1]/80 to-transparent backdrop-blur-[2px].
+  1758→Container layout: A 12-column grid (grid-cols-12 max-w-7xl mx-auto).
+  1759→Left (Cols 1-3): A geometric flower/clover SVG icon (fill: #1a1a1a) beside the brand name "mėntality" using the display font.
+  1760→Center (Cols 4-9): Desktop-only hidden nav links: "service", "patient resources", "about us", "education center". Styled small and lowercase.
+  1761→Right (Cols 10-12): "find help" anchor link, a black rounded button reading "get started →", and an elegant animated hamburger toggle icon for mobile.
+  1762→Include an AnimatePresence and motion.div drawer that slides down for mobile with the navigation links.
+  1763→4. Hero Component (src/components/Hero.tsx)
+  1764→Main styling: <section className="relative min-h-[110vh] sm:min-h-[140vh] w-full flex flex-col items-center justify-start overflow-hidden bg-bg-base">
+  1765→Background Video Container:
+  1766→Absolute wrapper: <div className="absolute top-[15vh] sm:top-[20vh] left-0 w-full h-[95vh] sm:h-[120vh] z-0 pointer-events-none">
+  1767→The video itself should be <video autoPlay loop muted playsInline className="w-full h-full object-cover opacity-100" />
+  1768→Exact CloudFront URL: https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260603_132049_036591b8-6e92-4760-b94c-a7ea6eef315c.mp4
+  1769→Gradient Mask: Below the video in the wrapper, add <div className="absolute top-0 left-0 w-full h-24 sm:h-32 bg-gradient-to-b from-bg-base to-transparent"></div> to smoothly blend the video into the #EDEEF5 background.
+  1770→Hero Content Alignment: Use <div className="max-w-7xl w-full mx-auto px-8 md:px-16 lg:px-20 relative z-10 grid grid-cols-12 gap-x-4 md:gap-x-8">. Place the text in col-span-12 md:col-span-10 md:col-start-2.
+  1771→Hero Header (motion.h1): Needs a slide-up fade (initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}).
+  1772→Exact text formatting:
+  1773→[#1a1a1a] Remix: Mentality offers
+  1774→[#8e8e8e] information
+  1775→(line break)
+  1776→[#8e8e8e] and resources to help you manage
+  1777→(line break)
+  1778→[#8e8e8e] your [Eye Icon Puipl UI Element] mental wellbeing.
+  1779→For the Eye Icon Element between "your" and "mental", create an inline pill-shaped visual: w-[16px] md:w-[42px] lg:w-[62px] border-[2px] border-[#1a1a1a] rounded-full inline-flex items-center justify-center containing a tiny solid black dot (w-2 h-2).
+  1780→Search Pill Component:
+  1781→Add a delayed slide-up animation (delay: 0.15) under the header text.
+  1782→Make a custom capsule <div className="bg-white rounded-[6px] border border-black/[0.05] p-1 pl-4 flex items-center shadow-sm">.
+  1783→Include an <input placeholder="Ask me anything..."> with transparent background so it looks integrated.
+  1784→Trailing action button: <button className="bg-[#1a1a1a] text-white w-9 h-9 rounded-full relative"> containing an SVG chevron/arrow icon.
+  1785→Architectural Edge Anchors:
+  1786→Absolute middle right edge: Create a glassmorphic pill button for language switching (pl — en).
+  1787→Absolute bottom left corner: Place "2024" in small neat text.
+  1788→Absolute bottom right corner: Place "mental health tools" in small neat text.
+  1789→Ensure there are no artificial margins/padding below the video to make sure the video takes exactly 100% of the Hero viewport, while allowing the #EDEEF5 background base to anchor the entire page cleanly.
+  1790→
+  1791→
+  1792→

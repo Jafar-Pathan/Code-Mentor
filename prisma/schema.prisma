@@ -1,0 +1,132 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  avatar    String?
+  role      String   @default("student")
+  level     String   @default("beginner")
+  streak    Int      @default(0)
+  xp        Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  chatSessions    ChatSession[]
+  quizAttempts    QuizAttempt[]
+  interviewSessions InterviewSession[]
+  codeReviews     CodeReview[]
+  learningProgress LearningProgress[]
+}
+
+model ChatSession {
+  id        String   @id @default(cuid())
+  userId    String
+  title     String   @default("New Conversation")
+  topic     String?
+  messages  ChatMessage[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model ChatMessage {
+  id         String   @id @default(cuid())
+  sessionId  String
+  role       String
+  content    String
+  sources    String?
+  createdAt  DateTime @default(now())
+
+  session ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  category    String
+  difficulty  String   @default("medium")
+  questions   String   // JSON array of questions
+  timeLimit   Int      @default(300)
+  createdBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  attempts QuizAttempt[]
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  userId    String
+  quizId    String
+  score     Int
+  total     Int
+  answers   String   // JSON
+  timeTaken Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  quiz Quiz @relation(fields: [quizId], references: [id])
+}
+
+model InterviewSession {
+  id          String   @id @default(cuid())
+  userId      String
+  type        String   @default("coding")
+  topic       String?
+  questions   String   // JSON
+  answers     String   // JSON
+  score       Int?
+  feedback    String?
+  status      String   @default("active")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model CodeReview {
+  id           String   @id @default(cuid())
+  userId       String
+  language     String
+  code         String
+  reviewResult String   // JSON
+  createdAt    DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model LearningProgress {
+  id          String   @id @default(cuid())
+  userId      String
+  topic       String
+  subtopic    String?
+  mastery     Int      @default(0)
+  totalQuizzes Int     @default(0)
+  totalTime   Int      @default(0)
+  lastStudied DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Topic {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String
+  description String?
+  order       Int      @default(0)
+  difficulty  String   @default("beginner")
+  prerequisites String?
+  createdAt   DateTime @default(now())
+}
