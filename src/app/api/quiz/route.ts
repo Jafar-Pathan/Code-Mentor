@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import ZAI from "z-ai-web-dev-sdk";
+import { getLLMClient, LLM_MODEL } from "@/lib/llm";
 import {
   validateRequest,
   QuizRequestSchema,
@@ -12,18 +12,7 @@ import {
   getCached,
   setCache,
   acquireLLMSlot,
-  createTimeoutController,
-  LLM_TIMEOUT_MS,
 } from "@/lib/cache";
-
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function getZAI() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -78,12 +67,11 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // ── Concurrency Control + Timeout ────────────────────────────────────
+  // ── Concurrency Control ─────────────────────────────────────────────
   const releaseSlot = await acquireLLMSlot();
-  const { controller: _, cleanup: clearTimeout } = createTimeoutController(LLM_TIMEOUT_MS);
 
   try {
-    const zai = await getZAI();
+    const llm = getLLMClient();
 
     const prompt = `Generate ${count} multiple-choice quiz questions about "${category}" at ${difficulty} difficulty level.
 
@@ -111,15 +99,17 @@ Rules:
 - Difficulty: ${difficulty === "easy" ? "basic recall and understanding" : difficulty === "hard" ? "complex problem-solving and edge cases" : "application and analysis"}
 ${HALLUCINATION_GUARD}`;
 
-    const completion = await zai.chat.completions.create({
+    const completion = await llm.chat.completions.create({
+      model: LLM_MODEL,
       messages: [
         {
-          role: "assistant",
+          role: "system",
           content: "You are a precise quiz generator for programming education. Every fact you state must be correct. Generate accurate, well-structured multiple-choice questions.",
         },
         { role: "user", content: prompt },
       ],
-      thinking: { type: "disabled" },
+      temperature: 0.3, // Low temp for factual accuracy
+      max_tokens: 4096,
     });
 
     let response = completion.choices[0]?.message?.content || "";
@@ -175,7 +165,6 @@ ${HALLUCINATION_GUARD}`;
       { status: 500 }
     );
   } finally {
-    clearTimeout();
     releaseSlot();
   }
 }

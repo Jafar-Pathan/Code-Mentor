@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import ZAI from "z-ai-web-dev-sdk";
+import { getLLMClient, LLM_MODEL } from "@/lib/llm";
 import { validateRequest, ChatRequestSchema } from "@/lib/validation";
 import { rateLimit } from "@/lib/rate-limit";
 import {
@@ -29,18 +29,6 @@ When responding, use markdown formatting for:
 - Bold for key terms
 - Numbered lists for step-by-step explanations
 - Tables for comparisons${HALLUCINATION_GUARD}`;
-
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function getZAI() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
-
-// Shared ZAI singleton getter for reuse
-export { getZAI };
 
 // Track active requests for monitoring
 let activeRequests = 0;
@@ -90,7 +78,6 @@ export async function POST(request: NextRequest) {
   const { messages, topic } = validation.data;
 
   // ── Prompt Injection Detection ───────────────────────────────────────
-  // Check the last user message (most likely injection vector)
   const lastUserMsg = [...messages].reverse().find((m) => m.role === "user");
   if (lastUserMsg) {
     const injectionCheck = detectPromptInjection(lastUserMsg.content);
@@ -118,28 +105,28 @@ export async function POST(request: NextRequest) {
   // ── Concurrency Control ──────────────────────────────────────────────
   const releaseSlot = await acquireLLMSlot();
   activeRequests++;
-  const { controller: timeoutController, cleanup: clearTimeout } =
-    createTimeoutController(LLM_TIMEOUT_MS);
 
   try {
-    const zai = await getZAI();
+    const llm = getLLMClient();
 
     const systemContent = topic
       ? `${SYSTEM_PROMPT}\n\n${safeTopicContext(topic)}`
       : SYSTEM_PROMPT;
 
-    const chatMessages = [
-      { role: "assistant" as const, content: systemContent },
+    const chatMessages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
+      { role: "system", content: systemContent },
       ...messages.map((m) => ({
         role: m.role as "user" | "assistant",
         content: m.content,
       })),
     ];
 
-    // ── LLM Call with Timeout ─────────────────────────────────────────
-    const completion = await zai.chat.completions.create({
+    // ── LLM Call ──────────────────────────────────────────────────────
+    const completion = await llm.chat.completions.create({
+      model: LLM_MODEL,
       messages: chatMessages,
-      thinking: { type: "disabled" },
+      temperature: 0.7,
+      max_tokens: 4096,
     });
 
     const response = completion.choices[0]?.message?.content;
@@ -197,12 +184,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Groq rate limit error
+    if (error instanceof Error && "status" in error && (error as { status: number }).status === 429) {
+      return NextResponse.json(
+        { error: "LLM rate limit reached. Please wait a moment before trying again." },
+        { status: 429 }
+      );
+    }
+
     return NextResponse.json(
       { error: "Failed to process your message. Please try again." },
       { status: 500 }
     );
   } finally {
-    clearTimeout();
     releaseSlot();
     activeRequests--;
   }

@@ -199,3 +199,27 @@ Stage Summary:
 - Zero code changes needed in any API route or component
 - User only needs to: 1) Create Neon project, 2) Paste two connection strings into .env, 3) Run bun run db:push && bun prisma db seed
 - Files changed: schema.prisma, db.ts, .env, package.json
+
+---
+Task ID: 15
+Agent: Main Orchestrator
+Task: Migrate LLM from z-ai-web-dev-sdk to Groq
+
+Work Log:
+- Installed groq-sdk package
+- Created src/lib/llm.ts — centralized LLM client with model config (llama-3.3-70b-versatile), Groq singleton, shared types
+- Rewrote src/app/api/chat/route.ts — replaced ZAI with getLLMClient(), proper role: "system" for system prompts, Groq error handling
+- Rewrote src/app/api/quiz/route.ts — replaced ZAI, added temperature: 0.3 for factual accuracy
+- Rewrote src/app/api/review/route.ts — replaced ZAI, temperature: 0.3
+- Rewrote src/app/api/interview/route.ts — replaced ZAI, temperature: 0.4
+- Updated .env with GROQ_API_KEY placeholder
+- Removed all z-ai-web-dev-sdk imports (verified zero references remain)
+- ESLint passes with zero errors
+- Dev server returns clean 200s
+
+Stage Summary:
+- All 4 AI API routes now use Groq SDK (openai-compatible)
+- Model: llama-3.3-70b-versatile (free on Groq, ~500 tok/s)
+- Single file to change model: src/lib/llm.ts → LLM_MODEL constant
+- User needs: GROQ_API_KEY from https://console.groq.com/keys
+- Groq free tier: 30 req/min, 14,400 req/day, 6,000 tokens/min

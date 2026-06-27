@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import ZAI from "z-ai-web-dev-sdk";
+import { getLLMClient, LLM_MODEL } from "@/lib/llm";
 import { validateRequest, CodeReviewRequestSchema } from "@/lib/validation";
 import { rateLimit } from "@/lib/rate-limit";
 import {
@@ -12,18 +12,7 @@ import {
   getCached,
   setCache,
   acquireLLMSlot,
-  createTimeoutController,
-  LLM_TIMEOUT_MS,
 } from "@/lib/cache";
-
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function getZAI() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -66,16 +55,13 @@ export async function POST(request: NextRequest) {
   const { code, language } = validation.data;
 
   // ── Prompt Injection in Code ─────────────────────────────────────────
-  // Code can contain anything, but we frame it safely
   const injectionCheck = detectPromptInjection(code);
   if (!injectionCheck.safe) {
-    // Don't block — code might legitimately contain these patterns.
-    // Instead, log and continue with framed content.
     console.warn(`[Review] Suspicious code pattern detected from IP ${clientIP.slice(0, 12)}`);
   }
 
   // ── Cache Check ──────────────────────────────────────────────────────
-  const cacheKey = hashKey(language, code.slice(0, 200)); // Hash first 200 chars for code similarity
+  const cacheKey = hashKey(language, code.slice(0, 200));
   const cached = getCached<string>("review", cacheKey);
   if (cached) {
     console.log(`[Review] Cache hit for ${language}`);
@@ -87,19 +73,19 @@ export async function POST(request: NextRequest) {
     );
   }
 
-  // ── Concurrency Control + Timeout ────────────────────────────────────
+  // ── Concurrency Control ─────────────────────────────────────────────
   const releaseSlot = await acquireLLMSlot();
-  const { controller: _, cleanup: clearTimeout } = createTimeoutController(LLM_TIMEOUT_MS);
 
   try {
-    const zai = await getZAI();
+    const llm = getLLMClient();
 
     const framedCode = frameUserContent(code, "code_to_review");
 
-    const completion = await zai.chat.completions.create({
+    const completion = await llm.chat.completions.create({
+      model: LLM_MODEL,
       messages: [
         {
-          role: "assistant",
+          role: "system",
           content: `You are an expert ${language} code reviewer. Analyze code for bugs, performance issues, readability, security vulnerabilities, and best practices. Always suggest improvements with refactored code.
 
 IMPORTANT:
@@ -137,7 +123,8 @@ Numbered list of main improvements made.`,
           content: `Please review this ${language} code:\n\n${framedCode}`,
         },
       ],
-      thinking: { type: "disabled" },
+      temperature: 0.3,
+      max_tokens: 4096,
     });
 
     const review = completion.choices[0]?.message?.content;
@@ -193,7 +180,6 @@ Numbered list of main improvements made.`,
       { status: 500 }
     );
   } finally {
-    clearTimeout();
     releaseSlot();
   }
 }

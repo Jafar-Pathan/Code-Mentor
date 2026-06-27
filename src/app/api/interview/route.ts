@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import ZAI from "z-ai-web-dev-sdk";
+import { getLLMClient, LLM_MODEL } from "@/lib/llm";
 import {
   validateRequest,
   InterviewRequestSchema,
@@ -12,18 +12,7 @@ import {
   getCached,
   setCache,
   acquireLLMSlot,
-  createTimeoutController,
-  LLM_TIMEOUT_MS,
 } from "@/lib/cache";
-
-let zaiInstance: Awaited<ReturnType<typeof ZAI.create>> | null = null;
-
-async function getZAI() {
-  if (!zaiInstance) {
-    zaiInstance = await ZAI.create();
-  }
-  return zaiInstance;
-}
 
 export async function POST(request: NextRequest) {
   const startTime = Date.now();
@@ -86,21 +75,21 @@ export async function POST(request: NextRequest) {
     });
   }
 
-  // ── Concurrency Control + Timeout ────────────────────────────────────
+  // ── Concurrency Control ─────────────────────────────────────────────
   const releaseSlot = await acquireLLMSlot();
-  const { controller: _, cleanup: clearTimeout } = createTimeoutController(LLM_TIMEOUT_MS);
 
   try {
-    const zai = await getZAI();
+    const llm = getLLMClient();
 
     const safeTopic = topic
       ? topic.replace(/[<>"'&]/g, "").slice(0, 100)
       : "Data Structures and Algorithms";
 
-    const completion = await zai.chat.completions.create({
+    const completion = await llm.chat.completions.create({
+      model: LLM_MODEL,
       messages: [
         {
-          role: "assistant",
+          role: "system",
           content: `You are a senior technical interviewer at a top tech company. Generate realistic, factually accurate interview questions.
           
 ${HALLUCINATION_GUARD}
@@ -136,7 +125,8 @@ Rules:
 - Questions must be factually accurate and realistic`,
         },
       ],
-      thinking: { type: "disabled" },
+      temperature: 0.4,
+      max_tokens: 4096,
     });
 
     let response = completion.choices[0]?.message?.content || "";
@@ -196,7 +186,6 @@ Rules:
       { status: 500 }
     );
   } finally {
-    clearTimeout();
     releaseSlot();
   }
 }
