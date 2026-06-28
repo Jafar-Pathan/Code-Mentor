@@ -1,0 +1,363 @@
+{
+  "title": "Data Structures & Algorithms — Problem Bank",
+  "description": "Curated interview problems organized by topic and difficulty",
+  "categories": [
+    {
+      "name": "Arrays & Hashing",
+      "problems": [
+        {
+          "title": "Two Sum",
+          "difficulty": "Easy",
+          "pattern": "Hash Map",
+          "description": "Given an array of integers and a target, return indices of two numbers that add up to the target.",
+          "hint": "Use a hash map to store each number's index. For each element, check if (target - element) exists in the map.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)",
+          "followUps": ["What if the array is sorted? → Use two pointers O(n) O(1)", "What if there are multiple valid pairs?", "What if you need to return the values, not indices?"]
+        },
+        {
+          "title": "Contains Duplicate",
+          "difficulty": "Easy",
+          "pattern": "Hash Set",
+          "description": "Given an array, return true if any value appears at least twice.",
+          "hint": "Add each element to a set. If you see a duplicate, return true immediately.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)",
+          "followUps": ["Can you do it without extra space? → Sort first O(n log n) O(1)"]
+        },
+        {
+          "title": "Valid Anagram",
+          "difficulty": "Easy",
+          "pattern": "Hash Map / Sorting",
+          "description": "Given two strings s and t, return true if t is an anagram of s.",
+          "hint": "Count character frequencies. Or sort both strings and compare.",
+          "timeComplexity": "O(n) or O(n log n)",
+          "spaceComplexity": "O(1) — only 26 letters",
+          "followUps": ["What if Unicode characters?", "What about multiple anagram groups? → Group Anagrams"]
+        },
+        {
+          "title": "Group Anagrams",
+          "difficulty": "Medium",
+          "pattern": "Hash Map",
+          "description": "Given an array of strings, group anagrams together.",
+          "hint": "Sort each string to get a key. Use a hash map: key → list of anagrams.",
+          "timeComplexity": "O(n × k log k) where k = max string length",
+          "spaceComplexity": "O(n × k)",
+          "followUps": ["Can you avoid sorting? → Use character count as key"]
+        },
+        {
+          "title": "Top K Frequent Elements",
+          "difficulty": "Medium",
+          "pattern": "Heap / Bucket Sort",
+          "description": "Given an array and integer k, return the k most frequent elements.",
+          "hint": "Count frequencies, then use min-heap of size k. Or use bucket sort by frequency.",
+          "timeComplexity": "O(n log k)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "title": "Product of Array Except Self",
+          "difficulty": "Medium",
+          "pattern": "Prefix/Suffix Product",
+          "description": "Given an array, return an array where output[i] = product of all elements except nums[i]. Cannot use division.",
+          "hint": "Compute prefix products left to right, then suffix products right to left.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) — output array doesn't count"
+        }
+      ]
+    },
+    {
+      "name": "Two Pointers & Sliding Window",
+      "problems": [
+        {
+          "title": "Valid Palindrome",
+          "difficulty": "Easy",
+          "pattern": "Two Pointers",
+          "description": "Given a string, determine if it is a palindrome (ignoring non-alphanumeric and case).",
+          "hint": "Two pointers from both ends. Skip non-alphanumeric characters.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Two Sum II (Input Array Is Sorted)",
+          "difficulty": "Medium",
+          "pattern": "Two Pointers",
+          "description": "Given a sorted array and target, find two numbers that sum to target. Return 1-based indices.",
+          "hint": "Left pointer at start, right at end. Move inward based on sum vs target.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "3Sum",
+          "difficulty": "Medium",
+          "pattern": "Two Pointers",
+          "description": "Find all unique triplets that sum to zero.",
+          "hint": "Sort array. Fix first element, then use two pointers for remaining pair. Skip duplicates.",
+          "timeComplexity": "O(n²)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Container With Most Water",
+          "difficulty": "Medium",
+          "pattern": "Two Pointers",
+          "description": "Find two lines that form a container with the most water.",
+          "hint": "Two pointers at ends. Move the shorter one inward. Why? Moving the taller one can only decrease area.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Longest Substring Without Repeating Characters",
+          "difficulty": "Medium",
+          "pattern": "Sliding Window",
+          "description": "Find the length of the longest substring without repeating characters.",
+          "hint": "Sliding window with a set. Shrink from left when duplicate found.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(min(m, n)) where m = charset size"
+        },
+        {
+          "title": "Minimum Window Substring",
+          "difficulty": "Hard",
+          "pattern": "Sliding Window",
+          "description": "Find the minimum window in s that contains all characters of t.",
+          "hint": "Expand right, track character counts. When all chars found, shrink from left. Track minimum window.",
+          "timeComplexity": "O(|s| + |t|)",
+          "spaceComplexity": "O(|t|)"
+        }
+      ]
+    },
+    {
+      "name": "Stack & Queue",
+      "problems": [
+        {
+          "title": "Valid Parentheses",
+          "difficulty": "Easy",
+          "pattern": "Stack",
+          "description": "Determine if the input string of brackets is valid (every opening has matching closing).",
+          "hint": "Push opening brackets. When closing bracket appears, check if it matches the top of stack.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "title": "Min Stack",
+          "difficulty": "Medium",
+          "pattern": "Stack",
+          "description": "Design a stack that supports push, pop, top, and getMin in O(1) time.",
+          "hint": "Maintain a parallel stack of minimum values, or store (value, min_at_this_point) tuples.",
+          "timeComplexity": "O(1) all operations",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "title": "Daily Temperatures",
+          "difficulty": "Medium",
+          "pattern": "Monotonic Stack",
+          "description": "Given daily temperatures, return an array where answer[i] = days to wait for a warmer temperature.",
+          "hint": "Monotonic decreasing stack. Store indices. Pop while current temp > stack top temp.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "title": "Largest Rectangle in Histogram",
+          "difficulty": "Hard",
+          "pattern": "Monotonic Stack",
+          "description": "Find the largest rectangular area in a histogram.",
+          "hint": "Monotonic increasing stack. When a bar is shorter than stack top, calculate area using popped bar as height.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "name": "Linked List",
+      "problems": [
+        {
+          "title": "Reverse Linked List",
+          "difficulty": "Easy",
+          "pattern": "Iteration / Recursion",
+          "description": "Reverse a singly linked list.",
+          "hint": "Iterative: three pointers (prev, curr, next). Reverse one link at a time.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) iterative, O(n) recursive"
+        },
+        {
+          "title": "Linked List Cycle",
+          "difficulty": "Easy",
+          "pattern": "Floyd's Algorithm",
+          "description": "Detect if a linked list has a cycle.",
+          "hint": "Slow and fast pointers. If they meet → cycle exists.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Merge Two Sorted Lists",
+          "difficulty": "Easy",
+          "pattern": "Two Pointers",
+          "description": "Merge two sorted linked lists into one sorted list.",
+          "hint": "Dummy head node. Compare and link nodes one by one.",
+          "timeComplexity": "O(n + m)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Reorder List",
+          "difficulty": "Medium",
+          "pattern": "Fast/Slow + Reverse + Merge",
+          "description": "Reorder list to L0 → Ln → L1 → Ln-1 → L2 → Ln-2 → ...",
+          "hint": "1) Find middle with fast/slow. 2) Reverse second half. 3) Merge two halves alternately.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "LRU Cache",
+          "difficulty": "Medium",
+          "pattern": "Hash Map + Doubly Linked List",
+          "description": "Design an LRU cache with get and put in O(1) time.",
+          "hint": "Hash map: key → node. Doubly linked list for order. Move to head on access. Remove tail when full.",
+          "timeComplexity": "O(1) both operations",
+          "spaceComplexity": "O(capacity)"
+        }
+      ]
+    },
+    {
+      "name": "Trees & BST",
+      "problems": [
+        {
+          "title": "Maximum Depth of Binary Tree",
+          "difficulty": "Easy",
+          "pattern": "DFS",
+          "description": "Find the maximum depth (height) of a binary tree.",
+          "hint": "Recursive: 1 + max(depth(left), depth(right)). Base case: null → 0.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h) where h = tree height"
+        },
+        {
+          "title": "Same Tree",
+          "difficulty": "Easy",
+          "pattern": "DFS",
+          "description": "Check if two binary trees are identical.",
+          "hint": "Both null → true. One null → false. Values must match and both subtrees must be same.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h)"
+        },
+        {
+          "title": "Lowest Common Ancestor of BST",
+          "difficulty": "Medium",
+          "pattern": "BST Property",
+          "description": "Find the lowest common ancestor of two nodes in a BST.",
+          "hint": "If both nodes are smaller → go left. If both larger → go right. Otherwise → current node is LCA.",
+          "timeComplexity": "O(h)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Binary Tree Level Order Traversal",
+          "difficulty": "Medium",
+          "pattern": "BFS",
+          "description": "Return level-order traversal (each level as a list).",
+          "hint": "BFS with queue. Process all nodes at current level before moving to next.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(w) where w = max width"
+        },
+        {
+          "title": "Validate Binary Search Tree",
+          "difficulty": "Medium",
+          "pattern": "DFS with Range",
+          "description": "Determine if a binary tree is a valid BST.",
+          "hint": "Each node must be in range (min, max). Left subtree < node < right subtree.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(h)"
+        },
+        {
+          "title": "Construct Binary Tree from Preorder and Inorder",
+          "difficulty": "Medium",
+          "pattern": "Recursion",
+          "description": "Build a binary tree from its preorder and inorder traversal arrays.",
+          "hint": "First element of preorder = root. Find root in inorder to split left/right subtrees.",
+          "timeComplexity": "O(n²) naive, O(n) with hash map",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    },
+    {
+      "name": "Dynamic Programming",
+      "problems": [
+        {
+          "title": "Climbing Stairs",
+          "difficulty": "Easy",
+          "pattern": "1D DP / Fibonacci",
+          "description": "You can climb 1 or 2 steps. How many ways to reach the top?",
+          "hint": "dp[i] = dp[i-1] + dp[i-2]. This is Fibonacci.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1) — only need last 2 values"
+        },
+        {
+          "title": "House Robber",
+          "difficulty": "Medium",
+          "pattern": "1D DP",
+          "description": "Max sum of non-adjacent numbers in an array.",
+          "hint": "dp[i] = max(dp[i-1], dp[i-2] + nums[i]). Either skip current house or rob it.",
+          "timeComplexity": "O(n)",
+          "spaceComplexity": "O(1)"
+        },
+        {
+          "title": "Coin Change",
+          "difficulty": "Medium",
+          "pattern": "1D DP (Unbounded Knapsack)",
+          "description": "Find minimum number of coins to make up a given amount.",
+          "hint": "dp[i] = min(dp[i], dp[i-coin] + 1) for each coin. Initialize with infinity, dp[0]=0.",
+          "timeComplexity": "O(amount × coins)",
+          "spaceComplexity": "O(amount)"
+        },
+        {
+          "title": "Longest Increasing Subsequence",
+          "difficulty": "Medium",
+          "pattern": "1D DP / Binary Search",
+          "description": "Find the length of the longest strictly increasing subsequence.",
+          "hint": "DP: dp[i] = 1 + max(dp[j]) for all j < i where nums[j] < nums[i]. O(n²). Binary search approach: O(n log n).",
+          "timeComplexity": "O(n log n) optimal",
+          "spaceComplexity": "O(n)"
+        },
+        {
+          "title": "Longest Common Subsequence",
+          "difficulty": "Medium",
+          "pattern": "2D DP",
+          "description": "Find the length of the LCS of two strings.",
+          "hint": "dp[i][j]: if chars match → dp[i-1][j-1]+1, else → max(dp[i-1][j], dp[i][j-1]).",
+          "timeComplexity": "O(m × n)",
+          "spaceComplexity": "O(min(m, n)) — space optimized"
+        },
+        {
+          "title": "Word Break",
+          "difficulty": "Medium",
+          "pattern": "1D DP",
+          "description": "Determine if a string can be segmented into dictionary words.",
+          "hint": "dp[i] = true if any dp[j] is true and s[j:i] is in dictionary.",
+          "timeComplexity": "O(n² × wordLookup)",
+          "spaceComplexity": "O(n)"
+        }
+      ]
+    }
+  ],
+  "systemDesignTopics": [
+    {
+      "topic": "Design a URL Shortener (like bit.ly)",
+      "keyComponents": ["Hashing / Base62 encoding", "Database (key → long URL)", "Caching (Redis)", "Analytics tracking"],
+      "estimation": "Assume 100M new URLs/month, 10B redirects/month. Storage: ~1TB/year.",
+      "tradeoffs": "Short key length vs collision probability, cache hit ratio vs consistency"
+    },
+    {
+      "topic": "Design a Chat System (like WhatsApp)",
+      "keyComponents": ["WebSocket for real-time", "Message queue (Kafka)", "Database (messages, users)", "Push notifications", "CDN for media"],
+      "estimation": "Assume 100M users, 1B messages/day. Storage: ~50TB/year.",
+      "tradeoffs": "Eventual vs strong consistency, online status accuracy, message ordering"
+    },
+    {
+      "topic": "Design a Rate Limiter",
+      "keyComponents": ["Token bucket / Sliding window algorithm", "Redis for distributed state", "Middleware layer"],
+      "estimation": "Handle 1M requests/second with <1ms added latency.",
+      "tradeoffs": "Memory usage vs accuracy, centralized vs distributed, synchronous vs async"
+    },
+    {
+      "topic": "Design a Feed System (like Twitter/Instagram)",
+      "keyComponents": ["Fan-out on write vs fan-out on read", "Redis for feed cache", "Ranking algorithm", "Pagination (cursor-based)"],
+      "estimation": "Assume 500M users, average 500 followers. Write fan-out: 500 writes per post.",
+      "tradeoffs": "Fan-out on write (expensive write, cheap read) vs fan-out on read (cheap write, expensive read)"
+    }
+  ]
+}

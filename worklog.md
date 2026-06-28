@@ -1097,3 +1097,24 @@ Stage Summary:
 - Keyword-based retrieval (can upgrade to pgvector embeddings later)
 - UI: Document upload/management in AI Tutor right panel
 - Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+---
+Task ID: 1
+Agent: Main Orchestrator
+Task: Create RAG data templates for CodeMentor AI knowledge base
+
+Work Log:
+- Created data/ directory with 5 subdirectories: curriculum, code-examples, reference, faq, problems
+- Created 3 curriculum files: ds-algo-syllabus.md, java-track.md, python-track.md
+- Created 4 code example files: arrays.md, linked-lists.md, trees.md, graphs.md
+- Created 3 reference sheets: big-o-cheatsheet.md, sql-cheatsheet.md, design-patterns.md
+- Created 2 FAQ files: common-mistakes.md, interview-tips.md
+- Created 2 problem bank files: ds-algo-problems.json, system-design-topics.md
+- Total: 14 files covering DS/Alo, Java, Python, SQL, Design Patterns, Interview Strategy
+
+Stage Summary:
+- RAG data directory fully populated with starter templates
+- Files contain real, production-quality content (not placeholder text)
+- All code examples include both Python and Java where applicable
+- Problem bank includes 30+ problems with hints, complexity, and follow-ups
+- Ready for user to upload via the Knowledge Base UI in the app once DB/API keys are configured
+
