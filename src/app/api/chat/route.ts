@@ -8,7 +8,9 @@ import {
   HALLUCINATION_GUARD,
   flagSuspiciousResponse,
 } from "@/lib/prompt-defense";
-import { acquireLLMSlot, createTimeoutController, LLM_TIMEOUT_MS } from "@/lib/cache";
+import { acquireLLMSlot } from "@/lib/cache";
+import { buildRAGContext } from "@/lib/rag";
+import { db } from "@/lib/db";
 
 const SYSTEM_PROMPT = `You are CodeMentor AI, an expert programming tutor. Your role is to help students learn programming through clear, patient, and adaptive teaching.
 
@@ -109,9 +111,35 @@ export async function POST(request: NextRequest) {
   try {
     const llm = getLLMClient();
 
-    const systemContent = topic
+    // ── RAG: Retrieve relevant context from knowledge base ───────
+    let ragContext: { contextBlock: string; sourceCount: number; sources: string[] } | null = null;
+    let ragSources: string[] = [];
+    try {
+      const user = await db.user.findFirst();
+      if (user && lastUserMsg) {
+        ragContext = await buildRAGContext(user.id, lastUserMsg.content);
+        if (ragContext) {
+          ragSources = ragContext.sources;
+        }
+      }
+    } catch (err) {
+      // RAG failure should not block chat — log and continue
+      console.warn("[Chat] RAG retrieval failed:", err instanceof Error ? err.message : "Unknown");
+    }
+
+    let systemContent = topic
       ? `${SYSTEM_PROMPT}\n\n${safeTopicContext(topic)}`
       : SYSTEM_PROMPT;
+
+    // Inject RAG context if found
+    if (ragContext) {
+      systemContent += `
+\n<retrieved_context>
+The student has uploaded reference documents. Use these to ground your answers. If the context contains relevant information, prioritize it. If not, answer from your general knowledge.
+
+${ragContext.contextBlock}
+</retrieved_context>`;
+    }
 
     const chatMessages: Array<{ role: "system" | "user" | "assistant"; content: string }> = [
       { role: "system", content: systemContent },
@@ -155,6 +183,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         response,
+        ...(ragSources.length > 0 && { sources: ragSources }),
         ...(hallucinationCheck.suspicious && {
           _meta: {
             hallucinationFlags: hallucinationCheck.flags,

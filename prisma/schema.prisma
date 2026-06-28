@@ -25,6 +25,7 @@ model User {
   interviewSessions InterviewSession[]
   codeReviews       CodeReview[]
   learningProgress  LearningProgress[]
+  documents         Document[]
 
   @@index([email])
   @@index([level])
@@ -148,6 +149,39 @@ model LearningProgress {
   @@index([topic])
   @@index([mastery])
   @@index([userId, topic])
+}
+
+// ─── RAG: Knowledge Base ────────────────────────────────────────────────
+
+model Document {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  fileName    String
+  fileType    String   @default("txt")      // txt, md, json, csv
+  chunkCount  Int      @default(0)
+  totalChars  Int      @default(0)
+  chunks      DocumentChunk[]
+  createdAt   DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DocumentChunk {
+  id         String   @id @default(cuid())
+  documentId String
+  content    String                        // The actual text chunk
+  chunkIndex Int                           // Order within the document
+  charStart  Int                           // Character offset in original
+  charEnd    Int
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([chunkIndex])
+  @@index([documentId, chunkIndex])
 }
 
 model Topic {

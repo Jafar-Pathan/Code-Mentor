@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Panel, PanelGroup, PanelResizeHandle } from 'react-resizable-panels';
 import { useAppStore } from '@/store/useAppStore';
+import { toast } from 'sonner';
 import ReactMarkdown from 'react-markdown';
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 
@@ -56,6 +57,10 @@ import {
   PanelLeftOpen,
   PanelRightClose,
   PanelRightOpen,
+  FileUp,
+  FileText,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
 
 // ── Mock conversation history ──────────────────────────────────────────
@@ -172,6 +177,9 @@ export default function AiTutor() {
   const [leftCollapsed, setLeftCollapsed] = useState(false);
   const [rightCollapsed, setRightCollapsed] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [documents, setDocuments] = useState<Array<{ id: string; title: string; fileName: string; chunkCount: number; totalChars: number }>>([]);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -282,7 +290,7 @@ export default function AiTutor() {
         id: crypto.randomUUID(),
         role: 'assistant',
         content: data.response || 'Sorry, I could not generate a response.',
-        sources: data._meta?.hallucinationFlags ? ['Response may contain inaccuracies'] : undefined,
+        sources: data.sources || data._meta?.hallucinationFlags ? ['Response may contain inaccuracies'] : undefined,
         timestamp: new Date(),
       });
     } catch (err) {
@@ -327,6 +335,57 @@ export default function AiTutor() {
   // Get sources from the last assistant message
   const lastAssistantMsg = [...chatMessages].reverse().find((m) => m.role === 'assistant');
   const sources = lastAssistantMsg?.sources;
+
+  // ── Knowledge Base ──
+  const fetchDocuments = useCallback(async () => {
+    try {
+      const res = await fetch('/api/documents');
+      if (res.ok) {
+        const data = await res.json();
+        setDocuments(data.documents || []);
+      }
+    } catch { /* silent */ }
+  }, []);
+
+  useEffect(() => { fetchDocuments(); }, [fetchDocuments]);
+
+  const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('title', file.name.replace(/\.[^/.]+$/, ''));
+      const res = await fetch('/api/documents', { method: 'POST', body: formData });
+      if (res.ok) {
+        await fetchDocuments();
+        toast({ title: 'Document added', description: `${file.name} → Knowledge Base` });
+      } else {
+        const err = await res.json();
+        toast({ title: 'Upload failed', description: err.error, variant: 'destructive' });
+      }
+    } catch {
+      toast({ title: 'Upload failed', variant: 'destructive' });
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  }, [fetchDocuments]);
+
+  const handleDeleteDoc = useCallback(async (docId: string) => {
+    try {
+      const res = await fetch('/api/documents', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ documentId: docId }),
+      });
+      if (res.ok) {
+        await fetchDocuments();
+        toast({ title: 'Document removed' });
+      }
+    } catch { /* silent */ }
+  }, [fetchDocuments]);
 
   return (
     <div className="h-screen w-full bg-background flex flex-col overflow-hidden">
@@ -683,6 +742,72 @@ export default function AiTutor() {
                             Sources will appear here
                           </p>
                         </div>
+                      )}
+                    </div>
+
+                    {/* Knowledge Base / RAG Documents */}
+                    <div>
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+                          Knowledge Base
+                        </h4>
+                        <span className="text-[10px] text-muted-foreground/50">
+                          {documents.length} doc{documents.length !== 1 ? 's' : ''}
+                        </span>
+                      </div>
+
+                      {/* Upload button */}
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".txt,.md,.json,.csv,.py,.java,.js,.ts,.sql,.html"
+                        className="hidden"
+                        onChange={handleFileUpload}
+                      />
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="w-full h-8 text-xs gap-2 border-dashed border-border/70 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-all mb-3"
+                        onClick={() => fileInputRef.current?.click()}
+                        disabled={uploading}
+                      >
+                        {uploading ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <FileUp className="w-3.5 h-3.5" />
+                        )}
+                        {uploading ? 'Uploading...' : 'Upload Reference'}
+                      </Button>
+
+                      {/* Document list */}
+                      {documents.length > 0 ? (
+                        <div className="space-y-1.5 max-h-40 overflow-y-auto">
+                          {documents.map((doc) => (
+                            <div
+                              key={doc.id}
+                              className="group flex items-center gap-2 p-2 rounded-lg bg-background/50 border border-border/50 text-xs hover:border-primary/30 transition-colors"
+                            >
+                              <FileText className="w-3.5 h-3.5 flex-shrink-0 text-primary/60" />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-foreground truncate">{doc.title}</p>
+                                <p className="text-muted-foreground/50 text-[10px]">
+                                  {doc.chunkCount} chunks · {(doc.totalChars / 1000).toFixed(1)}KB
+                                </p>
+                              </div>
+                              <button
+                                onClick={() => handleDeleteDoc(doc.id)}
+                                className="opacity-0 group-hover:opacity-100 text-muted-foreground/50 hover:text-destructive transition-all p-0.5"
+                              >
+                                <Trash2 className="w-3 h-3" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-muted-foreground/40 text-center py-3 leading-relaxed">
+                          Upload .txt, .md, .json, .csv, or code files<br />
+                          to ground AI answers in your materials
+                        </p>
                       )}
                     </div>
 

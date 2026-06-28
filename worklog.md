@@ -223,3 +223,877 @@ Stage Summary:
 - Single file to change model: src/lib/llm.ts → LLM_MODEL constant
 - User needs: GROQ_API_KEY from https://console.groq.com/keys
 - Groq free tier: 30 req/min, 14,400 req/day, 6,000 tokens/min
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
+
+---
+Task ID: 16
+Agent: Main Orchestrator
+Task: Implement RAG (Retrieval Augmented Generation) for AI Tutor
+
+Work Log:
+- Added Document and DocumentChunk models to Prisma schema (with User relation and indexes)
+- Created src/lib/rag.ts — full RAG pipeline:
+  - chunkText(): paragraph/sentence-aware text chunking with overlap
+  - ingestDocument(): chunks + stores in PostgreSQL
+  - retrieveChunks(): keyword-based retrieval with relevance scoring
+  - buildRAGContext(): assembles retrieved chunks into LLM context block
+  - listDocuments(), deleteDocument(), getDocumentStats(): CRUD operations
+- Created src/app/api/documents/route.ts:
+  - GET: list documents + stats
+  - POST: upload file (multipart form data), validate type/size, ingest into knowledge base
+  - DELETE: remove document and cascade-delete chunks
+  - Supported formats: .txt, .md, .json, .csv, .py, .java, .js, .ts, .sql, .html
+  - Limits: 2MB per file, 50 docs per user, 5MB total text
+- Updated src/app/api/chat/route.ts:
+  - Before each LLM call, retrieves relevant chunks from knowledge base
+  - Injects retrieved context into system prompt within <retrieved_context> tags
+  - Returns source document names in the API response
+  - RAG failure is non-blocking (falls back to regular chat)
+- Updated src/components/chat/AiTutor.tsx:
+  - Added Knowledge Base section in right panel
+  - File upload button with drag-to-upload
+  - Document list showing title, chunk count, size
+  - Delete button per document (appears on hover)
+  - Sources from RAG now shown in the Sources section
+- Prisma client regenerated, ESLint passes clean
+
+Stage Summary:
+- Full RAG pipeline: Upload → Chunk → Store → Retrieve → Inject → Answer
+- Keyword-based retrieval (can upgrade to pgvector embeddings later)
+- UI: Document upload/management in AI Tutor right panel
+- Files: schema.prisma, rag.ts, api/documents/route.ts, api/chat/route.ts, AiTutor.tsx
