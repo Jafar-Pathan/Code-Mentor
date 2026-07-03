@@ -34,7 +34,7 @@ function WelcomeBanner() {
       <CardContent className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between py-4">
         <div className="flex flex-col gap-2">
           <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-            Welcome back, Alex!
+            Welcome back, {user.name ? user.name.split(" ")[0] : "Student"}!
           </h2>
           <div className="flex items-center gap-4 flex-wrap">
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
@@ -113,32 +113,39 @@ function CircularProgress({
   );
 }
 
-function StatCards() {
+function StatCards({ data }: { data: any }) {
+  const { user } = useAppStore();
+  const completed = data?.overview?.completedTopics ?? 0;
+  const total = data?.overview?.totalTopics ?? 20;
+  const avgScore = data?.overview?.averageMastery ?? 0;
+  const minutes = data?.overview?.weeklyMinutes ?? 0;
+  const hours = (minutes / 60).toFixed(1);
+
   const stats = [
     {
       title: "Topics Mastered",
-      value: "10/20",
+      value: `${completed}/${total}`,
       icon: Trophy,
       color: "text-primary",
-      custom: <CircularProgress value={10} max={20} />,
+      custom: <CircularProgress value={completed} max={total} />,
     },
     {
       title: "Quiz Score Avg",
-      value: "78%",
+      value: `${avgScore}%`,
       icon: Target,
-      trend: "+5%",
+      trend: avgScore > 0 ? "+5%" : undefined,
       color: "text-emerald-400",
     },
     {
       title: "Interview Prep",
-      value: "8",
+      value: String(user.totalInterviews),
       subtitle: "sessions completed",
       icon: Mic,
       color: "text-purple-400",
     },
     {
       title: "Study Time",
-      value: "12.5h",
+      value: `${hours}h`,
       subtitle: "this week",
       icon: Clock,
       color: "text-amber-400",
@@ -277,7 +284,7 @@ const weakTopics = [
   { name: "Dynamic Programming", mastery: 25, color: "bg-red-500" },
 ];
 
-function WeakTopics() {
+function WeakTopics({ weakTopics = [] }: { weakTopics?: any[] }) {
   return (
     <Card className="h-full">
       <CardHeader>
@@ -285,28 +292,38 @@ function WeakTopics() {
       </CardHeader>
       <CardContent className="px-6 pb-6">
         <div className="flex flex-col gap-4">
-          {weakTopics.map((topic) => (
-            <button
-              key={topic.name}
-              onClick={() => console.log(`Navigate to topic: ${topic.name}`)}
-              className="flex flex-col gap-2 rounded-lg p-2.5 text-left transition-colors hover:bg-accent/50 cursor-pointer w-full"
-            >
-              <div className="flex items-center justify-between">
-                <span className="text-sm font-medium text-foreground">
-                  {topic.name}
-                </span>
-                <span className="text-xs text-muted-foreground">
-                  {topic.mastery}%
-                </span>
-              </div>
-              <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary/20">
-                <div
-                  className={`h-full rounded-full transition-all duration-700 ${topic.color}`}
-                  style={{ width: `${topic.mastery}%` }}
-                />
-              </div>
-            </button>
-          ))}
+          {weakTopics.length === 0 ? (
+            <p className="text-xs text-muted-foreground text-center py-8">
+              No weak topics identified yet. Start learning to see analytics!
+            </p>
+          ) : (
+            weakTopics.map((topic) => {
+              const mastery = topic.mastery ?? 0;
+              const color = mastery < 30 ? "bg-red-500" : mastery < 50 ? "bg-red-400" : "bg-orange-400";
+              return (
+                <button
+                  key={topic.topic}
+                  onClick={() => console.log(`Navigate to topic: ${topic.topic}`)}
+                  className="flex flex-col gap-2 rounded-lg p-2.5 text-left transition-colors hover:bg-accent/50 cursor-pointer w-full"
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm font-medium text-foreground">
+                      {topic.topic}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {mastery}%
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full overflow-hidden rounded-full bg-primary/20">
+                    <div
+                      className={`h-full rounded-full transition-all duration-700 ${color}`}
+                      style={{ width: `${mastery}%` }}
+                    />
+                  </div>
+                </button>
+              );
+            })
+          )}
         </div>
       </CardContent>
     </Card>
@@ -393,7 +410,19 @@ const weeklyData = [
   { day: "Sun", value: 70 },
 ];
 
-function WeeklyActivity() {
+function WeeklyActivity({ weeklyActivity = [] }: { weeklyActivity?: any[] }) {
+  const chartData = weeklyActivity.length > 0 ? weeklyActivity : [
+    { day: "Mon", minutes: 0 },
+    { day: "Tue", minutes: 0 },
+    { day: "Wed", minutes: 0 },
+    { day: "Thu", minutes: 0 },
+    { day: "Fri", minutes: 0 },
+    { day: "Sat", minutes: 0 },
+    { day: "Sun", minutes: 0 },
+  ];
+
+  const maxMinutes = Math.max(...chartData.map((d) => d.minutes), 1);
+
   return (
     <Card className="h-full">
       <CardHeader>
@@ -401,22 +430,26 @@ function WeeklyActivity() {
       </CardHeader>
       <CardContent className="px-6 pb-6">
         <div className="flex items-end justify-between gap-2 h-40">
-          {weeklyData.map((d) => (
-            <div
-              key={d.day}
-              className="flex flex-1 flex-col items-center gap-2"
-            >
-              <div className="w-full flex justify-center" style={{ height: "100px" }}>
-                <div className="w-full max-w-[36px] flex flex-col justify-end">
-                  <div
-                    className="w-full rounded-t-md bg-primary/80 transition-all duration-500 hover:bg-primary"
-                    style={{ height: `${d.value}%` }}
-                  />
+          {chartData.map((d) => {
+            const pct = Math.round((d.minutes / maxMinutes) * 100);
+            return (
+              <div
+                key={d.day}
+                className="flex flex-1 flex-col items-center gap-2"
+              >
+                <div className="w-full flex justify-center" style={{ height: "100px" }}>
+                  <div className="w-full max-w-[36px] flex flex-col justify-end">
+                    <div
+                      className="w-full rounded-t-md bg-primary/80 transition-all duration-500 hover:bg-primary"
+                      style={{ height: `${pct}%` }}
+                      title={`${d.minutes} mins study time`}
+                    />
+                  </div>
                 </div>
+                <span className="text-xs text-muted-foreground">{d.day}</span>
               </div>
-              <span className="text-xs text-muted-foreground">{d.day}</span>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </CardContent>
     </Card>
@@ -426,13 +459,33 @@ function WeeklyActivity() {
 // ─── Dashboard ─────────────────────────────────────────────────────
 
 export default function Dashboard() {
+  const [data, setData] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    async function loadDashboard() {
+      try {
+        const res = await fetch("/api/progress");
+        if (res.ok) {
+          const json = await res.json();
+          setData(json);
+        }
+      } catch (err) {
+        console.error("Dashboard failed to load progress:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadDashboard();
+  }, []);
+
   return (
     <div className="flex flex-col gap-6 max-w-7xl mx-auto">
       {/* Row 1: Welcome */}
       <WelcomeBanner />
 
       {/* Row 2: Stats */}
-      <StatCards />
+      <StatCards data={data} />
 
       {/* Row 3: Activity + Weak Topics */}
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -440,14 +493,14 @@ export default function Dashboard() {
           <RecentActivity />
         </div>
         <div className="lg:col-span-2">
-          <WeakTopics />
+          <WeakTopics weakTopics={data?.weakTopics} />
         </div>
       </div>
 
       {/* Row 4: Recommended + Weekly */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <RecommendedNext />
-        <WeeklyActivity />
+        <WeeklyActivity weeklyActivity={data?.weeklyActivity} />
       </div>
     </div>
   );

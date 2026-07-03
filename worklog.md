@@ -1118,3 +1118,22 @@ Stage Summary:
 - Problem bank includes 30+ problems with hints, complexity, and follow-ups
 - Ready for user to upload via the Knowledge Base UI in the app once DB/API keys are configured
 
+---
+Task ID: 1
+Agent: Main Orchestrator
+Task: Configure Neon DB + Groq API, fix connection, seed DB, start app
+
+Work Log:
+- Wrote API keys to .env (Groq + Neon pooled + Neon direct)
+- Neon serverless driver rejected URL format - switched to @prisma/adapter-pg
+- Rewrote db.ts to use PrismaPg adapter with pg Pool
+- Pushed schema to Neon successfully
+- Seeded database with user, 20 topics, 10 learning progress records
+- Started dev server on port 3000
+
+Stage Summary:
+- Database: Neon PostgreSQL (ap-southeast-1 region)
+- LLM: Groq (llama-3.3-70b-versatile)
+- DB adapter: @prisma/adapter-pg (replaced @prisma/adapter-neon due to URL parsing bug)
+- App running on port 3000
+

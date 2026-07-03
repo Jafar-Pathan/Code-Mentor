@@ -6,6 +6,7 @@ import {
   deleteDocument,
   getDocumentStats,
 } from "@/lib/rag";
+import { getSessionUserId } from "@/lib/auth";
 
 // ─── Supported file types and size limits ─────────────────────────────────
 
@@ -45,15 +46,15 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Resolve user (demo: use first user)
-    const user = await (await import("@/lib/db")).db.user.findFirst();
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    // Resolve user from session
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     const [documents, stats] = await Promise.all([
-      listDocuments(user.id),
-      getDocumentStats(user.id),
+      listDocuments(userId),
+      getDocumentStats(userId),
     ]);
 
     return NextResponse.json({ documents, stats });
@@ -116,15 +117,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // ── Resolve user ──
-    const { db } = await import("@/lib/db");
-    const user = await db.user.findFirst();
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    // Resolve user from session
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
     // ── Check limits ──
-    const stats = await getDocumentStats(user.id);
+    const stats = await getDocumentStats(userId);
     if (stats.documents >= MAX_TOTAL_DOCS) {
       return NextResponse.json(
         { error: `Maximum ${MAX_TOTAL_DOCS} documents reached. Delete some first.` },
@@ -142,7 +142,7 @@ export async function POST(request: NextRequest) {
     const text = await file.text();
 
     // ── Ingest ──
-    const result = await ingestDocument(user.id, title, text, file.name, ext);
+    const result = await ingestDocument(userId, title, text, file.name, ext);
 
     console.log(
       `[Documents] Ingested "${title}" → ${result.chunkCount} chunks (${result.totalChars} chars)`
@@ -188,13 +188,12 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    const { db } = await import("@/lib/db");
-    const user = await db.user.findFirst();
-    if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const deleted = await deleteDocument(documentId, user.id);
+    const deleted = await deleteDocument(documentId, userId);
     if (!deleted) {
       return NextResponse.json(
         { error: "Document not found." },

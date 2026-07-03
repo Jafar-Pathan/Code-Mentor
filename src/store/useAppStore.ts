@@ -11,6 +11,12 @@ interface AppState {
   // User
   user: UserProfile;
   setUser: (user: Partial<UserProfile>) => void;
+  isAuthenticated: boolean;
+  setIsAuthenticated: (auth: boolean) => void;
+  showAuthModal: boolean;
+  setShowAuthModal: (show: boolean) => void;
+  logout: () => Promise<void>;
+  checkSession: () => Promise<void>;
 
   // Chat
   chatMessages: Message[];
@@ -82,6 +88,36 @@ export const useAppStore = create<AppState>((set) => ({
     set((state) => ({
       user: { ...state.user, ...partial },
     })),
+  isAuthenticated: false,
+  setIsAuthenticated: (auth) => set({ isAuthenticated: auth }),
+  showAuthModal: false,
+  setShowAuthModal: (show) => set({ showAuthModal: show }),
+  logout: async () => {
+    try {
+      await fetch("/api/auth/me", { method: "POST" });
+    } catch (e) {
+      console.error("Logout request failed:", e);
+    }
+    set({
+      user: defaultUser,
+      isAuthenticated: false,
+      currentView: "landing",
+    });
+  },
+  checkSession: async () => {
+    try {
+      const res = await fetch("/api/auth/me");
+      if (res.ok) {
+        const data = await res.json();
+        set({
+          user: data,
+          isAuthenticated: true,
+        });
+      }
+    } catch (e) {
+      console.error("Session verification failed", e);
+    }
+  },
 
   // Chat
   chatMessages: [],

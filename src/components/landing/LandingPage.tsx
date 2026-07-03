@@ -60,6 +60,7 @@ const fadeIn = {
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { isAuthenticated, setShowAuthModal, setView } = useAppStore();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20);
@@ -106,12 +107,20 @@ function Navbar() {
 
         {/* Desktop CTAs */}
         <div className="hidden md:flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground">
-            Sign In
-          </Button>
-          <Button size="sm" className="bg-primary text-primary-foreground rounded-lg hover:bg-primary/90" onClick={() => useAppStore.getState().setView('dashboard')}>
-            Get Started
-          </Button>
+          {isAuthenticated ? (
+            <Button size="sm" className="bg-primary text-primary-foreground rounded-lg hover:bg-primary/90" onClick={() => setView('dashboard')}>
+              Go to Dashboard
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" className="text-muted-foreground hover:text-foreground" onClick={() => setShowAuthModal(true)}>
+                Sign In
+              </Button>
+              <Button size="sm" className="bg-primary text-primary-foreground rounded-lg hover:bg-primary/90" onClick={() => setShowAuthModal(true)}>
+                Get Started
+              </Button>
+            </>
+          )}
         </div>
 
         {/* Mobile Hamburger */}
@@ -143,12 +152,20 @@ function Navbar() {
               </a>
             ))}
             <div className="flex flex-col gap-2 pt-2 border-t border-border">
-              <Button variant="ghost" size="sm" className="text-muted-foreground justify-start">
-                Sign In
-              </Button>
-              <Button size="sm" className="bg-primary text-primary-foreground rounded-lg" onClick={() => useAppStore.getState().setView('dashboard')}>
-                Get Started
-              </Button>
+              {isAuthenticated ? (
+                <Button size="sm" className="bg-primary text-primary-foreground rounded-lg" onClick={() => { setMobileOpen(false); setView('dashboard'); }}>
+                  Go to Dashboard
+                </Button>
+              ) : (
+                <>
+                  <Button variant="ghost" size="sm" className="text-muted-foreground justify-start" onClick={() => { setMobileOpen(false); setShowAuthModal(true); }}>
+                    Sign In
+                  </Button>
+                  <Button size="sm" className="bg-primary text-primary-foreground rounded-lg" onClick={() => { setMobileOpen(false); setShowAuthModal(true); }}>
+                    Get Started
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </motion.div>
@@ -159,6 +176,8 @@ function Navbar() {
 
 /* ─── SECTION: Hero ─── */
 function Hero() {
+  const { isAuthenticated, setShowAuthModal, setView } = useAppStore();
+
   return (
     <section
       id="hero"
@@ -216,9 +235,9 @@ function Hero() {
           <Button
             size="lg"
             className="bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 h-12 px-8 text-sm font-medium"
-            onClick={() => useAppStore.getState().setView('dashboard')}
+            onClick={() => isAuthenticated ? setView('dashboard') : setShowAuthModal(true)}
           >
-            Start Learning Free
+            {isAuthenticated ? "Go to Dashboard" : "Start Learning Free"}
             <ArrowRight className="w-4 h-4 ml-2" />
           </Button>
           <Button
@@ -1224,6 +1243,8 @@ function Pricing() {
 
 /* ─── SECTION: Final CTA ─── */
 function FinalCTA() {
+  const { isAuthenticated, setShowAuthModal, setView } = useAppStore();
+
   return (
     <section className="py-24 sm:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1250,9 +1271,9 @@ function FinalCTA() {
               <Button
                 size="lg"
                 className="bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 h-12 px-8 text-sm font-medium"
-                onClick={() => useAppStore.getState().setView('dashboard')}
+                onClick={() => isAuthenticated ? setView('dashboard') : setShowAuthModal(true)}
               >
-                Get Started Free
+                {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button

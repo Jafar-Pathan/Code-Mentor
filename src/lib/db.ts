@@ -1,20 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { neon } from "@neondatabase/serverless";
-import { PrismaNeon } from "@prisma/adapter-neon";
+import { Pool } from "pg";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 /**
- * Neon Serverless PostgreSQL Connection
- *
- * Uses the Neon serverless driver over WebSocket/HTTP for:
- * - Cold-start friendly (no TCP connection pooling needed)
- * - Works on serverless platforms (Vercel, Lambda, Edge)
- * - Scales to thousands of concurrent connections
- *
- * Connection strings are set via environment variables:
- * - DATABASE_URL:         Pooled connection (via Neon proxy) — for queries
- * - DIRECT_DATABASE_URL:  Direct connection — for migrations (db push/migrate)
- *
- * Get your Neon connection strings at: https://console.neon.tech
+ * Neon PostgreSQL Connection via pg adapter
  */
 
 function createPrismaClient() {
@@ -22,15 +11,12 @@ function createPrismaClient() {
 
   if (!databaseUrl) {
     throw new Error(
-      "DATABASE_URL is not set. " +
-      "Add it to your .env file. " +
-      "Get a free Neon database at https://neon.tech"
+      "DATABASE_URL is not set. Add it to your .env file."
     );
   }
 
-  // Use Neon serverless adapter for WebSocket-based connections
-  const sql = neon(databaseUrl);
-  const adapter = new PrismaNeon(sql);
+  const pool = new Pool({ connectionString: databaseUrl });
+  const adapter = new PrismaPg(pool);
 
   return new PrismaClient({
     adapter,

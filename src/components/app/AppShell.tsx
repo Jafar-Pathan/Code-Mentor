@@ -23,6 +23,7 @@ import {
   Map,
   Menu,
   Bell,
+  LogOut,
 } from "lucide-react";
 
 const navItems: { icon: React.ElementType; label: string; view: ViewType }[] = [
@@ -52,6 +53,16 @@ function SidebarContent({
   currentView: ViewType;
   onNavigate: (view: ViewType) => void;
 }) {
+  const { user, logout } = useAppStore();
+  const initials = user.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "U";
+
   return (
     <div className="flex h-full flex-col">
       {/* Logo */}
@@ -93,23 +104,42 @@ function SidebarContent({
       <Separator />
 
       {/* User section */}
-      <div className="flex items-center gap-3 px-5 py-4">
-        <Avatar className="h-9 w-9">
-          <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
-            AC
-          </AvatarFallback>
-        </Avatar>
-        <div className="flex flex-col">
-          <span className="text-sm font-medium text-foreground">Alex Chen</span>
-          <span className="text-xs text-muted-foreground">Intermediate</span>
+      <div className="flex items-center justify-between px-5 py-4">
+        <div className="flex items-center gap-3">
+          <Avatar className="h-9 w-9">
+            <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-foreground">{user.name}</span>
+            <span className="text-xs text-muted-foreground">{user.level}</span>
+          </div>
         </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          onClick={logout}
+          aria-label="Log Out"
+        >
+          <LogOut className="h-4 w-4" />
+        </Button>
       </div>
     </div>
   );
 }
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
-  const { currentView, setView, sidebarOpen, setSidebarOpen } = useAppStore();
+  const { currentView, setView, sidebarOpen, setSidebarOpen, user } = useAppStore();
+  const initials = user.name
+    ? user.name
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .slice(0, 2)
+        .toUpperCase()
+    : "U";
 
   const pageTitle =
     currentView === "landing" ? "CodeMentor" : viewTitles[currentView];
@@ -172,7 +202,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
             {/* User avatar */}
             <Avatar className="h-8 w-8">
               <AvatarFallback className="bg-primary/20 text-primary text-xs font-semibold">
-                AC
+                {initials}
               </AvatarFallback>
             </Avatar>
           </div>

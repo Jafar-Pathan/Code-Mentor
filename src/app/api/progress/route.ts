@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { getCached, setCache, hashKey } from "@/lib/cache";
+import { getSessionUserId } from "@/lib/auth";
 
 // In production, userId comes from the authenticated session.
 // This demo uses a query parameter with allowlist validation.
@@ -30,10 +31,19 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // ── User Resolution (production: from session) ─────────────────────
-    // For demo: use the first user in the database.
-    // Production: const session = await getServerSession(); const userId = session.user.id;
-    const user = await db.user.findFirst();
+    // ── User Resolution ────────────────────────────────────────────────
+    const userId = await getSessionUserId();
+    if (!userId) {
+      return NextResponse.json(
+        { error: "Unauthorized" },
+        { status: 401 }
+      );
+    }
+
+    const user = await db.user.findUnique({
+      where: { id: userId },
+    });
+
     if (!user) {
       return NextResponse.json(
         { error: "User not found" },

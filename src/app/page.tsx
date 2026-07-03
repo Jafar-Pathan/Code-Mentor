@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useAppStore } from "@/store/useAppStore";
 import LandingPage from "@/components/landing/LandingPage";
 import AppShell from "@/components/app/AppShell";
@@ -11,6 +12,7 @@ import InterviewMode from "@/components/interview/InterviewMode";
 import Analytics from "@/components/analytics/Analytics";
 import LearningRoadmap from "@/components/roadmap/LearningRoadmap";
 import ErrorBoundary from "@/components/ErrorBoundary";
+import { AuthModal } from "@/components/auth/AuthModal";
 
 function AppContent() {
   const { currentView } = useAppStore();
@@ -36,12 +38,17 @@ function AppContent() {
 }
 
 export default function Home() {
-  const { currentView } = useAppStore();
+  const { currentView, checkSession } = useAppStore();
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
 
   if (currentView === "landing") {
     return (
       <ErrorBoundary>
         <LandingPage />
+        <AuthModal />
       </ErrorBoundary>
     );
   }
@@ -51,6 +58,7 @@ export default function Home() {
       <AppShell>
         <AppContent />
       </AppShell>
+      <AuthModal />
     </ErrorBoundary>
   );
 }

@@ -11,6 +11,7 @@ import {
 import { acquireLLMSlot } from "@/lib/cache";
 import { buildRAGContext } from "@/lib/rag";
 import { db } from "@/lib/db";
+import { getSessionUserId } from "@/lib/auth";
 
 const SYSTEM_PROMPT = `You are CodeMentor AI, an expert programming tutor. Your role is to help students learn programming through clear, patient, and adaptive teaching.
 
@@ -115,9 +116,9 @@ export async function POST(request: NextRequest) {
     let ragContext: { contextBlock: string; sourceCount: number; sources: string[] } | null = null;
     let ragSources: string[] = [];
     try {
-      const user = await db.user.findFirst();
-      if (user && lastUserMsg) {
-        ragContext = await buildRAGContext(user.id, lastUserMsg.content);
+      const userId = await getSessionUserId();
+      if (userId && lastUserMsg) {
+        ragContext = await buildRAGContext(userId, lastUserMsg.content);
         if (ragContext) {
           ragSources = ragContext.sources;
         }
